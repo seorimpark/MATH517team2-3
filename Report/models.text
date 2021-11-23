@@ -1,0 +1,70 @@
+
+<table style="text-align:center"><caption><strong>Table 1: Regression results</strong></caption>
+<tr><td colspan="2" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td><em>Dependent variable:</em></td></tr>
+<tr><td></td><td colspan="1" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td>CNT</td></tr>
+<tr><td colspan="2" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">lc1</td><td>3.894<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.132)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc2</td><td>1.755<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.115)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc3</td><td>0.162</td></tr>
+<tr><td style="text-align:left"></td><td>(0.143)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc4</td><td>2.590<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.117)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc5</td><td>2.398<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.115)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc6</td><td>-7.777<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.471)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc7</td><td>2.700<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.115)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc8</td><td>2.375<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.116)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc9</td><td>1.037<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.117)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc10</td><td>4.528<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.123)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc11</td><td>1.517<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.115)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc12</td><td>1.993<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.116)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc13</td><td>-1.537<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.166)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc14</td><td>2.759<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.121)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc15</td><td>2.597<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.128)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc16</td><td>5.875<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.118)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc17</td><td>-0.385<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.131)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">lc18</td><td>1.408<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.116)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>-0.428<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.115)</td></tr>
+<tr><td style="text-align:left"></td><td></td></tr>
+<tr><td colspan="2" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>452,930</td></tr>
+<tr><td style="text-align:left">Log Likelihood</td><td>-1,138,222.000</td></tr>
+<tr><td colspan="2" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+</table>
+
+<table style="text-align:center"><caption><strong>Table 1: Regression results</strong></caption>
+<tr><td colspan="1" style="border-bottom: 1px solid black"></td></tr><tr><td>1</td></tr>
+<tr><td colspan="1" style="border-bottom: 1px solid black"></td></tr></table>

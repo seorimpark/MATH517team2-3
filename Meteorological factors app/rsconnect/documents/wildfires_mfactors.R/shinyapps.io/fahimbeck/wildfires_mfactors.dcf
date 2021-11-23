@@ -1,0 +1,13 @@
+name: wildfires_mfactors
+title: wildfires_mfactors
+username:
+account: fahimbeck
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5047958
+bundleId: 5236913
+url: https://fahimbeck.shinyapps.io/wildfires_mfactors/
+when: 1636558778.3193
+lastSyncTime: 1636558778.3193
+asMultiple: FALSE
+asStatic: FALSE
