@@ -2,11 +2,13 @@ library(shiny)
 library(usmap)
 library(tidyverse)
 library(scales) 
+library(zoo)
 
 
 ################################################################################################################################################
 #loading the data###############################################################################################################################################
 #setwd("~/Desktop/Github/SCV/SCV_project/MATH517team2-3/PROJECT1_Interactive Geographic Map Shiny/")
+
 df0<-read_csv("Data_us.csv")
 df1<- df0[,-c(1,17)]
 # transforming the columns start date and end date to date format:
@@ -22,6 +24,14 @@ df4<-df3
 df4
 df<-df4
 df<-as.data.frame(df)
+
+
+
+df_Data<- df %>% filter (Group=='By Month')
+df_Data$Month<-sprintf("%02d", as.numeric(df_Data$Month))
+df_Data$Date <- as.yearmon(paste(df_Data$Year, df_Data$Month), "%Y %m")
+
+
 ################################################################################################################################################
 
 ################################################################################################################################################
@@ -162,6 +172,28 @@ data_to_plot<-function(DataFrame, agegroup,place_d,group, m, y){
   return(us_TotalD)
 }
 
+pick_data<-function(DataFrame, agegroup,place_d, date){
+  
+  DataFrame0<-Select_Age_Group(DataFrame, agegroup)
+  DataFrame1<-Select_PlaceDeath(DataFrame0, place_d)
+  df_to_plot<- DataFrame1 %>% filter(Date == date) #Feb 2020
+  
+  Death_by_state<-df_to_plot %>% 
+    group_by(State) %>% 
+    summarise(`COVID-19 Deaths`= sum(`COVID-19 Deaths`,na.rm=TRUE))
+  
+  Death_by_state<-Death_by_state[-c(34,41,47),]
+  Death_by_state<-standardise_pop(Death_by_state)
+  
+  Total_D<-Death_by_state$`COVID-19 Deaths`
+  us_TotalD<-as.data.frame(us_popul)
+  us_TotalD$pop_2015<-Total_D 
+  us_TotalD<-us_TotalD[,-c(1,2)]
+  colnames(us_TotalD)[1]<-"state"
+  us_TotalD<-as.data.frame(us_TotalD)
+  return(us_TotalD)
+}
+#pick_data(df_Data,"All Ages", "Total - All Places of Death" ,df_Data$Date[6] )
 Month_to_number<-function(m)
 {
   if(m=="January"){return(1)}
@@ -181,36 +213,102 @@ Month_to_number<-function(m)
 
 
 
-shinyUI(
-  pageWithSidebar(
-    headerPanel("Covid deaths in the US"),
-    sidebarPanel(
-      selectInput("Group", "Select the period", choices = c("By Total", "2020", "2021")),
-      conditionalPanel(condition = "input.Group == '2020'",radioButtons("Month", "Please select the month", choices = c("Total","January","February","March","April",
-                                                                                                                        "May","June","July","August","September",
-                                                                                                                        "October","November","December"))),
-      conditionalPanel(condition = "input.Group == '2021'",radioButtons("Month", "Please select the month", choices = c("Total","January","February","March","April",
-                                                                                                                        "May","June","July","August","September"))),
-      
-      
-      ###
-      selectInput("AgeGroup", "Select the age group",
-                  choices = c("All Ages","0-17 years","18-29 years" ,
-                              "30-39 years","40-49 years","50-64 years", 
-                              "65-74 years","75-84 years","85 years and over")),
-      selectInput("PlaceD", "Select the Place of death",
-                  choices = c("Total - All Places of Death","Healthcare setting,
+
+# ui <- fluidPage(
+#   
+#   titlePanel("Covid deaths in the US"),
+#     sidebarPanel(
+#       selectInput("Group", "Select the period", choices = c("Yearly Total", "Monthly")),
+#       conditionalPanel(condition = "input.Group == 'Month' ",sliderInput("Time", "Select the month and Month and Year", min = as.Date("2020-03-01"),max =as.Date("2021-09-01"),value=as.Date("2020-12-01"), animate = animationOptions(interval = 3000, loop = TRUE),timeFormat="%b %Y") ),
+#       conditionalPanel(condition = "input.Group == 'Yearly Total'",radioButtons("Year", "Please select the Year", choices = c("2020","2021"))),
+#       selectInput("AgeGroup", "Select the age group",
+#                   choices = c("All Ages","0-17 years","18-29 years" ,
+#                               "30-39 years","40-49 years","50-64 years", 
+#                               "65-74 years","75-84 years","85 years and over")),
+#       selectInput("PlaceD", "Select the Place of death",
+#                   choices = c("Total - All Places of Death","Healthcare setting,
+#                               inpatient", "Healthcare setting, outpatient or emergency room",
+#                               "Healthcare setting, dead on arrival","Decedent's home" ,
+#                               "Hospice facility", "Nursing home/long term care facility",
+#                               "Other","Place of death unknown")),
+#       
+#     ),
+#     mainPanel(
+#       plotOutput("myPlot")
+#     ))
+
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+  
+  # Application title
+  titlePanel("Covid deaths in the US"),
+  
+  # Sidebar with a slider input for number of bins 
+  sidebarPanel(
+    selectInput("Group", "Select the period", choices = c("Yearly Total", "Monthly")),
+    #conditionalPanel(condition = "input.Group == 'Monthly' ",sliderInput("Time", "Select the Month and Year", min = as.Date("2020-03-01"),max =as.Date("2021-09-01"),value=as.Date("2020-12-01"), animate = animationOptions(interval = 3000, loop = TRUE),timeFormat="%b %Y") ),
+    conditionalPanel(condition = "input.Group == 'Yearly Total'",radioButtons("Year", "Please select the Year", choices = c("2020","2021"))),
+    conditionalPanel(condition = "input.Group == 'Monthly' ",sliderTextInput("Time","Select the Month and Year", choices= unique(df_Data$Date), selected = df_Data$Date[5],animate = animationOptions(interval = 3000, loop = TRUE)) ),
+    
+    selectInput("AgeGroup", "Select the age group",
+                choices = c("All Ages","0-17 years","18-29 years" ,
+                            "30-39 years","40-49 years","50-64 years", 
+                            "65-74 years","75-84 years","85 years and over")),
+    selectInput("PlaceD", "Select the Place of death",
+                choices = c("Total - All Places of Death","Healthcare setting,
                               inpatient", "Healthcare setting, outpatient or emergency room",
-                              "Healthcare setting, dead on arrival","Decedent's home" ,
-                              "Hospice facility", "Nursing home/long term care facility",
-                              "Other","Place of death unknown")),
-      
-    ),
-    mainPanel(
-      plotOutput("myPlot")
-    )
+                            "Healthcare setting, dead on arrival","Decedent's home" ,
+                            "Hospice facility", "Nursing home/long term care facility",
+                            "Other","Place of death unknown")),
+    
+  ),
+    
+ 
+    
+    # Show a plot of the generated distribution
+  mainPanel(
+    plotOutput("myPlot")
   )
-)
+      
+    )
+  
+
+
+
+
+server <- function(input, output) {
+  
+  output$myPlot <- renderPlot({
+    distType_age <- input$AgeGroup
+    distType_placeofdeath <- input$PlaceD
+    distGroup<- input$Group  # so it would be Yearly Total or Monthly
+    distTime<-input$Time
+    distYear<-input$Year
+    print(distTime)
+    if (distGroup == "Yearly Total")
+    {
+      dt=data_to_plot(df,distType_age,distType_placeofdeath,"By Year",0,distYear)
+    }else if (distGroup == "Monthly"){
+      dt=pick_data(df_Data,  distType_age,distType_placeofdeath, distTime)
+    }
+    ###
+    #DataFrame, agegroup,place_d,group, m=0, y=0
+    #randomVec <- rnorm(size, mean = as.numeric(input$mean), sd = as.numeric(input$sd))
+    plot_usmap(data=dt, values = "pop_2015", color = "red") + 
+      scale_fill_continuous(name = "us corona deaths per million ", low="lightpink",high="Red",label = scales::comma) + 
+      theme(legend.position = "right")
+    
+  }
+  
+  )
+ 
+  
+  
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
 
 
 
