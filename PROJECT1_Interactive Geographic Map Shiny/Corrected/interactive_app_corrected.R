@@ -3,11 +3,13 @@ library(usmap)
 library(tidyverse)
 library(scales) 
 library(zoo)
+library(shinyWidgets)
+
 
 
 ################################################################################################################################################
 #loading the data###############################################################################################################################################
-#setwd("~/Desktop/Github/SCV/SCV_project/MATH517team2-3/PROJECT1_Interactive Geographic Map Shiny/")
+
 
 df0<-read_csv("Data_us.csv")
 df1<- df0[,-c(1,17)]

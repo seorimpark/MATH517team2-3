@@ -1,0 +1,13 @@
+name: CovidUsMap
+title:
+username:
+account: zinebag
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5232194
+bundleId: 5309549
+url: https://zinebag.shinyapps.io/CovidUsMap/
+when: 1638277071.65715
+lastSyncTime: 1638277071.65721
+asMultiple: FALSE
+asStatic: FALSE
