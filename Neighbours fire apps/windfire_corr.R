@@ -6,6 +6,7 @@ library(maps)
 library(dplyr)
 library(zeallot)
 library(ppls)
+# install.packages("https://cran.r-project.org/src/contrib/Archive/ppls/ppls_1.6-1.1.tar.gz", repos = NULL)
 
 # Read data
 load("data_train_DF.RData")
