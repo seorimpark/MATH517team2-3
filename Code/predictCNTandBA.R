@@ -62,11 +62,24 @@ select <- zeroinfl(CNT~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
                    clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+ clim9 +
                    clim10+ altiMean+ altiSD, data = train)
 step(select, direction = "backward")
+#removes only clim4
+model <- zeroinfl(CNT~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+                    lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
+                    clim1+clim2+clim3+ clim5+ clim6+ clim7+clim8+clim9+
+                    clim10+ altiMean+ altiSD, data = training)
+prediction <- predict(model, testing)
+prediction
+data.frame(R2 = R2(prediction, testing$CNT,na.rm = TRUE),
+           RMSE = rmse(prediction, testing$CNT, na.rm=TRUE),
+           MAE = mae(prediction, testing$CNT,na.rm =TRUE))
+
+
 #Build a model for BA values : 
-modelB <- zeroinfl(BA~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
-                      lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
-                      clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+ clim9 +
-                     clim10+ altiMean+ altiSD, data = training)
+training$BA = as.integer(training$BA)
+modelB <- zeroinfl(BA~lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+                     lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
+                     clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+
+                     clim9 +clim10+ altiMean+ altiSD, data = training)
                    
 prediction <-predict(modelB,testing)
 
@@ -76,7 +89,8 @@ data.frame(R2= R2(prediction, testing$BA, na.rm = TRUE),
 #Final goal : compute the missing the 
 goalBA<- df[is.na(df$BA),]
 goalCNT <- df[is.na(df$CNT),]
-goal$CNT <- 
+goalCNT$CNT <- predict()
+goal
 
 
 
