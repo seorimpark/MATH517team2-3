@@ -1,0 +1,14 @@
+name: windfire_corr
+title: windfire_corr
+username:
+account: fahimbeck
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5256896
+bundleId: 5321660
+url: https://fahimbeck.shinyapps.io/windfire_corr/
+when: 1638492938.64704
+lastSyncTime: 1638492938.64704
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: neighbours_fire.R
