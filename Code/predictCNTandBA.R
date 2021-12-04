@@ -37,7 +37,7 @@ testing <- train [-random_sample,]
 #Step 3 : Build the model: 
 model <- zeroinfl(CNT~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
                     lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
-                    clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+
+                    clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+clim9+
                     clim10+ altiMean+ altiSD, data = training)
 #Features selection : 
 #step (model, direction = "backward")
@@ -51,16 +51,28 @@ prediction
 #mae mean absolute error : on average the forecast's distance from the true value is .. (MAE)
 #R2 
 
-data.frame(R2 = R2(prediction, testing$CNT),
-           RMSE = RMSE(prediction, testing$CNT),
-           MAE = MAE(prediction, testing$CNT))
+data.frame(R2 = R2(prediction, testing$CNT,na.rm = TRUE),
+           RMSE = rmse(prediction, testing$CNT, na.rm=TRUE),
+           MAE = mae(prediction, testing$CNT,na.rm =TRUE))
+#The R2 is really bad and since we didn't manage to do features selection on the training set we are going to take an another small training set to run features selection : 
+sp = sample (nrow(training), 10000)
+train = training[sp,]
+select <- zeroinfl(CNT~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+                   lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
+                   clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+ clim9 +
+                   clim10+ altiMean+ altiSD, data = train)
+step(select, direction = "backward")
+#Build a model for BA values : 
+modelB <- zeroinfl(BA~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+                      lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
+                      clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+ clim9 +
+                     clim10+ altiMean+ altiSD, data = training)
+                   
+prediction <-predict(modelB,testing)
 
-(prediction)
-nrow (testing$CNT)
-
-
-
-
+data.frame(R2= R2(prediction, testing$BA, na.rm = TRUE),
+           RMSE = rmse(prediction, testing$BA, na.rm = TRUE),
+           MAE = mae(prediction, testing$BA, na.rm = TRUE))
 #Final goal : compute the missing the 
 goalBA<- df[is.na(df$BA),]
 goalCNT <- df[is.na(df$CNT),]
