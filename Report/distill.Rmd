@@ -126,6 +126,8 @@ library(reshape2)
 library(stargazer)
 library(knitr)
 library(stargazer)
+library(survival)
+library(timereg)
 ````
 
 ```{r,include=FALSE}
@@ -1111,11 +1113,132 @@ for (i in unique(data$year)){
 plot(unique(data$year),mean.temp, 'l', xlab='Year',ylab='Yearly mean temperature (deg. Celsius)', main='Temporal evolution of mean temperature')
 ```
 
+
+## Survival analysis on the incidence of wildfires
+
+
+Having considered the subgroup of gridpoints that are highly susceptible to wildfires, we next  use survival analysis to study how temperature affects the incidence of wildfires. We will use Cox additive hazards regression to characterize how temperature affects the survival probability with respect to wildfire events, defined as the probability of not experiencing any wildfire event by month $t$ during a given year. To fix ideas, we first consider the survival during year 2015. The Kaplan-Meier estimator of the survival probability is given by
+
+$$ \widehat{P}(T>t) = \prod_{T_i\leq t} \left( 1- \frac{\Delta N_{T_i}}{Z(T_i)} \right)~,$$
+
+where $T_i$ is the time of the first wildfire in the geographical gridpoint $i$ during the year 2015, and $Z(T_i)$ is the number of gridpoints at risk of experience a first wildfire event just before time $T_i$.  We have plotted the Kaplan-Meier estimator for the year 2015 in Fig. \@ref(fig:survival) below. As can be seen in the plot, the first wildfire often occurs during March.
+
+
+
+```{r survival, fig.cap="Kaplan-Meier estimator of the survival with respect to wildfire events during 2015",  echo=FALSE}
+df.surv<- data.frame('ID'= paste(data$lon,data$lat) , 'start'=rep(0,nrow(data)) , 'stop'=data$month,  'count' =data$CNT, 'event'= as.numeric(data$CNT>=1)  , 'year'= data$year, 'Temp'=data$clim4-273 )
+# Remove rows with missing values:
+df.surv<- df.surv[
+  !is.na(df.surv$ID)&
+  !is.na(df.surv$start)&
+  !is.na(df.surv$stop)&
+  !is.na(df.surv$count)&
+  !is.na(df.surv$event)&
+  !is.na(df.surv$Temp)&
+  !is.na(df.surv$year),
+    ]
+df.surv$start<-df.surv$stop
+df.surv$stop<-df.surv$stop+1 # Increment month by 1 to consider incidence by the end of each month
+
+#hist(table(df.surv$ID))
+
+
+locations<-unique(paste(data$lon,data$lat))
+
+
+# Next, we create a sample of this dataframe containing N=500 different gridpoints from year 2015.
+N<- 1000 # Sample of 500 individuals
+year<- 2013
+set.seed(2)
+
+df.sample<-df.surv[df.surv$year==year,]
+df.sample<-df.sample[df.sample$ID %in% sample(unique(df.sample$ID) ,N),]
+# table(table(df.sample$ID)) # Checking the number of measurements for each month
+
+
+
+#Next, we remove entries for gridpoints after the first occurrence of a wildfire. 
+fire.locations<-unique(df.sample$ID[df.sample$event==1])
+#length(fire.locations)
+
+
+df.truncated.sample <- df.sample[!df.sample$ID %in% fire.locations,]
+
+for (i in fire.locations) {
+  T.fire<-min(df.sample$stop[df.sample$ID==i & df.sample$event==1]) # Time of first occurence of fire in location i
+  df.truncated.sample<-rbind(df.truncated.sample,df.sample[df.sample$ID==i & df.sample$stop <= T.fire ,])
+}
+
+# Kaplan-Meier estimator survival w.r.t. occurrence of at least 1 wildfire in 2015
+fit.survival<-survfit(Surv(start,stop, event) ~ 1, data=df.truncated.sample,conf.type="plain")
+plot(fit.survival,mark.time=TRUE, xlim=c(3,10), ylim=c(0,1), main="Survival with respect to wildfire in 2015", xlab='Month',ylab='Survival')
+
+# Cox proportional hazards model fit for 2015
+coxfit<-coxph( Surv(start,stop, event)  ~ Temp, df.truncated.sample)
+
+
+```
+
+
+Next, we fit a Cox proportional hazards regression model of the type
+
+$$ \alpha(t\mid T_K; \beta) = \alpha_0(t)\exp\left(\beta \cdot T_C\right)$$
+where $\alpha_0(t)$ is a baseline hazard, $T_C$ is the temperature (in degrees Celsius) and $\beta$ is regression coefficent for  $T_C$, which is to be estimated. Thus, the hazard ratio for an increase by 1 degree Celsius is given by
+$$HR=\frac{\alpha(t\mid \theta; \beta)}{\alpha(t\mid \theta-1; \beta)}=\exp(\beta) ~.$$
+For the year 2015, our Cox proportional hazards regression give the following results:
+
+```{r echo=FALSE}
+summary(coxfit)
+```
+
+Thus, temperature has a statistically significant effect on the hazard ratio for wildfire events. We have also repeated the analysis for other years and illustrated the resulting hazard ratio estimates with $95\%$ confidence intervals  in Fig. \@ref(fig:HR) below.
+
+
+```{r HR, fig.cap="Evolution of hazard ratios over time", echo=FALSE}
+j<-0
+HR<-data.frame('HR'=0,'lower.95'=0,'upper95'=0,'year'=0) # Dataframe containing hazard ratios and confidence intervals for different years
+
+
+for (y in unique(df.surv$year)) {
+j<-j+1
+
+df.sample<-df.surv[df.surv$year==y,]
+df.sample<-df.sample[df.sample$ID %in% sample(unique(df.sample$ID) ,N),]
+
+fire.locations<-unique(df.sample$ID[df.sample$event==1])
+df.truncated.sample <- df.sample[!df.sample$ID %in% fire.locations,]
+
+for (i in fire.locations) {
+  T.fire<-min(df.sample$stop[df.sample$ID==i & df.sample$event==1]) # Time of first occurrence of fire in location i
+  df.truncated.sample<-rbind(df.truncated.sample,df.sample[df.sample$ID==i & df.sample$stop <= T.fire ,])
+}
+
+
+
+coxfit<-coxph( Surv(start,stop, event)  ~ Temp, df.truncated.sample)
+HR[j,c(1,2,3)]<-summary(coxfit)$conf.int[c(1,3,4)]
+HR[j,4]<-y
+
+}
+
+# Plotting the confidence intervals over time
+y.max<-max(HR$upper95)
+y.min<-min(HR$lower.95)
+plot(HR$year,HR$HR, 's', ylim=c(y.min,y.max), ylab='HR', xlab='Year', main='Evolution of hazard ratio for temperature over time')
+lines(HR$year, HR$lower.95, 's', lty='dotted')
+lines(HR$year,HR$upper95,'s',lty='dotted')
+lines(HR$year,rep(1,length(HR$year)), col='red','s' ) 
+```
+
+
+Most years, the confidence intervals do not include the null value of the hazard ratio, shown as a red line on the above plot. This may suggest that temperature not only exacerbates wildfires in high risk geographical locations, but is also associated with new occurrences of wildfires in areas that where they do not usually occur. This may give an indication of the scale of evolution of wildfires in the future, if temperatures continue to rise.  
+
+
 ## Conclusion
 
 In this investigation, we have studied three sets of risk factors for wildfires: (1) the time period (2) the type of land cover and (3) local meteorological conditions. The interactive map as a function of time let us analyse the influence of the time period within a year and throughout the years. Although the map looked very heterogeneous, some particular trends have been observed for a specific time period in a year. Also, the global trend for burnt area was periodic, and slightly increasing throughout the years whereas the number of wildfires did not. In our exploration of land cover, we found that the proportion of urban areas has been increasing from 1993-2005. Fires are often caused by urban activity, so this trend could lead to more wildfires in the future. In our meteorological exploration, we found that the cause-effect relation of meteorological variables on wildfires may be highly multifactorial. The correlations between the number of fires and meterological varibles were small marginally in the population. To disentangle the effect of meterological variables from the effect of land cover on fires, we examined the joint distribution of these variables. We found that the correlation between meteorological variables and land cover types were weaker than expected, which makes it more feasible to interpret these variables as independent causes of wildfires.
 
-Most of our analysis has targeted marginal associations between risk factors and the number of wildfires or aggregate burnt area (i.e. unconditional on subsets of geographical gridpoints). These correlations were often weak, but grew stronger in subsets of the population with a greater number of wildfires. This motivated us to characterize the heterogeneity in risk of wildfires by conducting subgroup analyses. To do so, we performed quantile regression, which revealed that temperature substantially exacerbated the risk of wildfires in areas which are prone to wildfires. This is in spite of the fact that temperature was only weakly associated with wildfires marginally.
+Most of our analysis has targeted marginal associations between risk factors and the number of wildfires or aggregate burnt area (i.e. unconditional on subsets of geographical gridpoints). These correlations were often weak, but grew stronger in subsets of the population with a greater number of wildfires. This motivated us to characterize the heterogeneity in risk of wildfires by conducting subgroup analyses. To do so, we performed quantile regression, which revealed that temperature substantially exacerbated the risk of wildfires in areas which are prone to wildfires. This is in spite of the fact that temperature was only weakly associated with  the number of wildfire events  marginally. We also performed survival analysis for the time to the first wildfire event of the year using Cox additive hazards regression, which revealed a significant association betwen temperature and the hazard of the first wildfire event.
 
 Furthermore, we have seen a weakly rising trend in the temperature over the past years. Coupled with our observation fact that the proportion of urban land cover has been rising steadily with time, and that human activity is an important cause of wildfires, we note that we may see an increased occurrence of wildfires in the years to come.
 
