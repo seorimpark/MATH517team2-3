@@ -143,7 +143,7 @@ server <- function(input, output) {
     c(month, year) %<-% as.numeric(time)
     
     # Subset
-    selection <- windfire_corr[data$year == year & data$month == month,]
+    selection <- windfire_corr[windfire_corr$year == year & windfire_corr$month == month,]
     selection <- na.omit(selection)
     
     # US map
@@ -191,7 +191,7 @@ server <- function(input, output) {
     c(month, year) %<-% as.numeric(time)
     
     # Subset
-    selection <- windfire_corr[data$year == year & data$month == month,]
+    selection <- windfire_corr[windfire_corr$year == year & windfire_corr$month == month,]
     selection <- na.omit(selection)
     
     # Plot histograms
