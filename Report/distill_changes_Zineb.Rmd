@@ -29,11 +29,11 @@ options(knitr.duplicate.label = "allow")
 
 ## Introduction
 
-Wildfires are uncontrolled fires that burn in the wildland vegetation, often in rural areas. They are not limited to a particular continent or environment, and burned different kinds of ecosystems for hundreds of millions of years on Earth (@definitionWilfires). The problem of wildfires is at the stake all over the world, along with the topic of climate change and preservation of nature and ecosystems. There has been several major cases of wildfires recently, growing in number and severity: for instance, the California wildfires in 2020 became one of the largest wildfire season in the California history (@californiaWildfire) with several millions of acres burnt (@burntArea). Also, Turkey went through the worst wildfire season of the country in July and August 2021 (@wildfireTurkey), and the 2019-2020 bushfires in Australia (also known as the Black Summer) killed several billions of animals. A lot of them were endangered species, which some were believed to be driven to extinction from this incidence (@wildfireAus). Therefore, a lot of countries aim at minimizing the size and the number of occurrences of wildfires, since they can be the cause of many direct and indirect fatalities in humans (@fatalities), as well as air pollution (@airPollution) and the loss of ecosystems and biodiversity (the case of Black Summer). 
+Wildfires are uncontrolled fires that burn in the wildland vegetation, often in rural areas. They are not limited to a particular continent or environment, and burned different kinds of ecosystems for hundreds of millions of years on Earth [@definitionWilfires]. The problem of wildfires is at the stake all over the world, along with the topic of climate change and preservation of nature and ecosystems. There has been several major cases of wildfires recently, growing in number and severity: for instance, the California wildfires in 2020 became one of the largest wildfire season in the California history [@californiaWildfire] with several millions of acres burnt [@burntArea]. Also, Turkey went through the worst wildfire season of the country in July and August 2021 [@wildfireTurkey], and the 2019-2020 bushfires in Australia (also known as the Black Summer) killed several billions of animals. A lot of them were endangered species, which some were believed to be driven to extinction from this incidence [@wildfireAus]. Therefore, a lot of countries aim at minimizing the size and the number of occurrences of wildfires, since they can be the cause of many direct and indirect fatalities in humans [@fatalities], as well as air pollution [@airPollution] and the loss of ecosystems and biodiversity (the case of Black Summer).  
 
-In order to reduce the number and the severity of wildfires, understanding the main factors at the origin of the catastrophy is necessary. The incidences are very often caused accidentally (burning debris, agricultural activities, campfires, smoking), or intentionally (arson, children). Although the latter case can be prevented, human or non-human accidents can always happen and they are hard to predict (@causes). However, we can suspect that there are certain natural conditions that make those accidents easier to happen and to grow them bigger in size. By identifying them, the states can build a strategy to efficiently suppress wildfire once it happens, and get prepared to fight against for locations that are highly possible to catch fire at a certain period of the year. 
+In order to reduce the number and the severity of wildfires, understanding the main factors at the origin of the catastrophy is necessary. The incidences are very often caused accidentally (burning debris, agricultural activities, campfires, smoking), or intentionally (arson, children). Although the latter case can be prevented, human or non-human accidents can always happen and they are hard to predict [@causes]. However, we can suspect that there are certain natural conditions that make those accidents easier to happen and to grow them bigger in size. By identifying them, the states can build a strategy to efficiently suppress wildfire once it happens, and get prepared to fight against for locations that are highly possible to catch fire at a certain period of the year. 
 
-In addition, those factors change as the time goes by, and they generate a better or worse conditions for wildfires to happen. For instance, global warming is highly suspected to be one of the main reasons why the wildfires were more recurrent in the recent days (@globalWarming). Countries have been undergoing climate changes, and those unexpected events can be the seed of the recent disasters.
+In addition, those factors change as the time goes by, and they generate a better or worse conditions for wildfires to happen. For instance, global warming is highly suspected to be one of the main reasons why the wildfires were more recurrent in the recent days [@globalWarming]. Countries have been undergoing climate changes, and those unexpected events can be the seed of the recent disasters.
 
 ### Research questions
 The purpose of this investigation is to give an answer to the following question: 
@@ -128,6 +128,9 @@ library(knitr)
 library(stargazer)
 library(survival)
 library(timereg)
+library(zeallot)
+library(ppls)
+# install.packages("https://cran.r-project.org/src/contrib/Archive/ppls/ppls_1.6-1.1.tar.gz", repos = NULL)
 ````
 
 ```{r,include=FALSE}
@@ -1111,6 +1114,127 @@ It can be seen that the areas represented are not that many in number and are lo
 
 For other thresholds, an interactive app is available [here](https://fahimbeck.shinyapps.io/wildfires_mfactors/). Instructions and explanations are displayed on the app. Basically, you have the same results as above, but thresholds for $CNT$ and $BA$ are entered by the user. 
 
+## Effect of wind on the spread of wildfires
+
+In this section, we want to model the effect of wind on the spread of wildfires for a given month and year. We define a value of correlation between wind and aggregate fire direction for each square areas in the US map. What is called "aggregate fire direction" is defined by computing the sum (resultant) of at most 8 vectors if the corresponding area has 8 neighbours, and normalizing it to a unit vector. Vectors start from the central area and point in the direction of the neighbour in question. The intensity of the vector corresponds to the value of $CNT$ (number of wildfires) or $BA$ (aggregated burnt area of wildfires in acres) of the neighbour according to the selected criterion. Wind vector is simply the wind direction of the central area and is normalized. Correlation is then given by calculating the dot product of these vectors. Since they are normalized, the result ranges from -1 to 1. -1 means that their direction is opposite (negatively correlated), 0 that they are perpendicular (no correlation) and 1 that their direction is the same (positively correlated). Figure \@ref(fig:diagram) illustrates the above explanations. More about quantifying the correlation between two vectors can be found [here](https://medium.com/@ns2586/geometric-interpretation-of-the-correlation-between-two-variables-4011fb3ea18e).
+
+```{r diagram, echo = FALSE, fig.cap='Example for the calculation of the correlation with 8 neighbours. Colors represent the magnitude of the value of CNT or BA (red being the highest and yellow the lowest). The norm of the vectors is adjusted according to the latter. $\\vec{R}$ is the resultant of the vectors and corresponds to the aggregate fire direction. $\\vec{W}$ is the vector for wind. The dot product requires a normalization of the vectors to obtain a correlation between both directions.'}
+knitr::include_graphics("diagram.png")
+```
+
+Let us now see how these correlations are represented in a US map. We plot them for the month of July of the year 2015 (see Figure \@ref(fig:windfiremap)) and we choose to consider fire with variable $BA$. 
+
+```{r windfiremap, echo = FALSE, fig.cap='US map representing correlations between wind and fire aggregate direction (calculated according to the neighbours by considering fire with variable $BA$) in July of year 2015'}
+# Read data
+load("../Data/data_train_DF.RData")
+data = data_train_DF
+# Remove NA values from CNT and BA
+data <- data[!is.na(data$CNT),]
+data <- data[!is.na(data$BA),]
+# Keep variables we need with clim1 and clim2 wind components
+data = data[, c("CNT", "BA", "lon", "lat", "area", "year", "month", "clim1", "clim2")]
+data = data[data$CNT>0 & data$BA>0,]
+# Function returning correlations for BA and CNT
+windfire <- function(sub, param = "BA") {
+  n = nrow(sub)
+  windfire=0
+  for (i in 1:n) {
+    c(lon, lat, wind_east, wind_north) %<-% sub[i, c("lon", "lat", "clim1", "clim2")]
+    fire_dir = NA
+    
+    if (nrow(sub[sub$lon==lon+0.5 & sub$lat==lat+0.5,]) != 0) {
+      fire_dir = rbind(sub[sub$lon==lon+0.5 & sub$lat==lat+0.5, param]*c(sqrt(2)/2,sqrt(2)/2), fire_dir)
+    }
+    
+    if (nrow(sub[sub$lon==lon-0.5 & sub$lat==lat-0.5,]) != 0) {
+      fire_dir = rbind(sub[sub$lon==lon-0.5 & sub$lat==lat-0.5, param]*c(-sqrt(2)/2,-sqrt(2)/2), fire_dir)
+    }
+    
+    if (nrow(sub[sub$lon==lon+0.5 & sub$lat==lat-0.5,]) != 0) {
+      fire_dir = rbind(sub[sub$lon==lon+0.5 & sub$lat==lat-0.5, param]*c(sqrt(2)/2,-sqrt(2)/2), fire_dir)
+    }
+    
+    if (nrow(sub[sub$lon==lon-0.5 & sub$lat==lat+0.5,]) != 0) {
+      fire_dir = rbind(sub[sub$lon==lon-0.5 & sub$lat==lat+0.5, param]*c(-sqrt(2)/2,sqrt(2)/2), fire_dir)
+    }
+    
+    if (nrow(sub[sub$lon==lon+0.5 & sub$lat==lat,]) != 0) {
+      fire_dir = rbind(sub[sub$lon==lon+0.5 & sub$lat==lat, param]*c(1,0), fire_dir)
+    }
+    
+    if (nrow(sub[sub$lon==lon-0.5 & sub$lat==lat,]) != 0) {
+      fire_dir = rbind(sub[sub$lon==lon-0.5 & sub$lat==lat, param]*c(-1,0), fire_dir)
+    }
+    
+    if (nrow(sub[sub$lon==lon & sub$lat==lat+0.5,]) != 0) {
+      fire_dir = rbind(sub[sub$lon==lon & sub$lat==lat+0.5, param]*c(0,1), fire_dir)
+    }
+    
+    if (nrow(sub[sub$lon==lon & sub$lat==lat-0.5,]) != 0) {
+      fire_dir = rbind(sub[sub$lon==lon & sub$lat==lat-0.5, param]*c(0,-1), fire_dir)
+    }
+    
+    if (!is.null(nrow(fire_dir))) {
+      fire_dir = apply(fire_dir, 2, sum, na.rm = TRUE)
+      
+      fire_dir = normalize.vector( fire_dir )
+      wind_dir = normalize.vector( c(wind_east, wind_north) )
+      
+      windfire[i] = sum(fire_dir * wind_dir)
+    } else {
+      windfire[i] = NA
+    }
+  }
+  
+  return(windfire)
+}
+# Subset and computation
+selection <- data[data$year == 2015 & data$month == 7,]
+selection[, "windfire_BA"] = windfire(selection, param = "BA")
+selection <- na.omit(selection)
+# US map
+us <- map_data('state')
+    
+# Plot correlations 
+ggplot() + 
+  geom_map(aes(map_id=region), fill="white", color="black", size=0.15, map=us, data=us) +
+  expand_limits(x = us$long, y = us$lat) +
+  geom_point(data=selection, aes(x=lon, y=lat, size=area*1.4, colour=windfire_BA), shape=15) +
+  scale_colour_gradient2(name="Correlation", low="red", mid="grey50", high="green", midpoint=0, limits=c(-1,1)) +
+  scale_size_identity() + 
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+        plot.title = element_text(size=20, hjust=0.5, vjust=2)) + 
+  ggtitle('Wind and fire aggregate direction correlation') + 
+  coord_fixed(1.3)
+```
+
+At first glance, we notice that there are more cases of positive and negative correlation than cases of non-correlation. Green squares are often surrounded by other green squares, forming areas where the wind would move the fire and increase its strength. The same goes for the red squares, which form areas where the wind would also move the fire, but descrease its strength. There are fewer areas of non-correlation. To get a better idea of the distribution of these correlation values, they should be represented on a histogram. Figure \@ref(fig:wfhistogram) represents the distribution of correlations between wind and fire aggregate direction. 
+
+```{r wfhistogram, echo = FALSE, fig.cap='Histogram representing the distribution of correlations between wind and fire aggregate direction (calculated according to the neighbours by considering fire with variable $BA$) with median (red dashed line) in July of year 2015'}
+# Plot histograms
+theme_set(theme_bw(base_size=16))
+theme_update(plot.title = element_text(hjust = 0.5))
+ggplot(data = selection, aes(x = windfire_BA)) +
+geom_histogram(aes(y=..count../sum(..count..)),
+                 bins=100,
+                 color="black", 
+                 fill="dodgerblue") + 
+scale_x_continuous(limits = c(-1, 1)) +
+scale_y_continuous(limits = c(0, 0.1), labels = scales::percent) +
+labs(title="Histogram of correlations", x="Correlation between wind and fire aggregate direction", y="Frequency") +
+geom_vline(xintercept = median(selection$windfire_BA), color = "red", linetype = "dashed", size=1.5)
+theme_set(theme_gray(base_size=16))
+      
+```
+
+The histogram reflects what we observed on the map. Correlations are distributed almost evenly around 0, then there is a surplus on each side. This means that there is actually a relation between the spread of fire and wind. In the first case, the fire propagates in the direction of the wind, which can be interpreted by the fact that the wind displaces the flames with greater intensity. This happens in particular when its speed is high. As the following article explains [@bonsor], "winds supply the fire with additional oxygen, further dry potential fuel and push the fire across the land at a faster rate". In the second case, the fire goes against the wind, which can be explained by many reasons. According to the article, wildfires can generate winds called "fire whirls". They result from vortices created by the heat of fire. Another reason explaining this negative correlation is related to topography. A fire that is trying to move up a slope can be stopped by air flows going down. For further explanations on the phenomenon, we invite you to refer to the above-mentioned article.
+
+Note that there are some shortcomings in this way of modelling this phenomenon. For example, we are not sure that there is really a propagation of fire when the neighbours are also affected, especially as the surface of a square is rather large (approximately 2000km<sup>2</sup>). In addition, we work with monthly averages. The wind, for instance, continually changes in direction and in intensity. This has necessarily repercussions on the accuracy of the results. 
+
+A web application is available [here](https://fahimbeck.shinyapps.io/windfire_corr/) to view these results for other months and years. There is also the possibility of taking into account the fire according to the number of wildfires in the month for a given area ($CNT$). We notice the same general trend for each month, including when the criterion is changed to $CNT$.
 
 ## Subgroup analysis
 
@@ -1315,7 +1439,7 @@ Most years, the confidence intervals do not include the null value of the hazard
 
 ## Conclusion
 
-In this investigation, we have studied three sets of risk factors for wildfires: (1) the time period (2) the type of land cover and (3) local meteorological conditions. Before delving into the detailed analyses that would allow us to answer these questions, we conducted a preliminary and entirely visual investigation to see the interaction between the number of fires and the area burned with the different climatic and spatial variables. With the results obtained, we gained a first idea and expectations for more accurate findings that will follow. The interactive map as a function of time let us analyse the influence of the time period within a year and throughout the years. Although the map looked very heterogeneous, some particular trends have been observed for a specific time period in a year. Also, the global trend for burnt area was periodic, and slightly increasing throughout the years whereas the number of wildfires did not. In our exploration of land cover, we found that the proportion of urban areas has been increasing from 1993-2005. Fires are often caused by urban activity, so this trend could lead to more wildfires in the future. In our meteorological exploration, we found that the cause-effect relation of meteorological variables on wildfires may be highly multifactorial. The correlations between the number of fires and meterological varibles were small marginally in the population. To disentangle the effect of meterological variables from the effect of land cover on fires, we examined the joint distribution of these variables. We found that the correlation between meteorological variables and land cover types were weaker than expected, which makes it more feasible to interpret these variables as independent causes of wildfires.
+In this investigation, we have studied three sets of risk factors for wildfires: (1) the time period (2) the type of land cover and (3) local meteorological conditions. Before delving into the detailed analyses that would allow us to answer these questions, we conducted a preliminary and entirely visual investigation to see the interaction between the number of fires and the area burned with the different climatic and spatial variables. With the results obtained, we gained a first idea and expectations for more accurate findings that will follow. The interactive map as a function of time let us analyse the influence of the time period within a year and throughout the years. Although the map looked very heterogeneous, some particular trends have been observed for a specific time period in a year. Also, the global trend for burnt area was periodic, and slightly increasing throughout the years whereas the number of wildfires did not. In our exploration of land cover, we found that the proportion of urban areas has been increasing from 1993-2005. Fires are often caused by urban activity, so this trend could lead to more wildfires in the future. In our meteorological exploration, we found that the cause-effect relation of meteorological variables on wildfires may be highly multifactorial. The correlations between the number of fires and meterological varibles were small marginally in the population. To disentangle the effect of meterological variables from the effect of land cover on fires, we examined the joint distribution of these variables. We found that the correlation between meteorological variables and land cover types were weaker than expected, which makes it more feasible to interpret these variables as independent causes of wildfires. In addition, we tried to model the effect of wind on the spread of wildfires. The results as well as the literature indeed show that wind plays a major role in the dynamics of wildfires, especially by supplying them with oxygen. The direction as well as the intensity of the fires vary according to the parameters of the current wind. 
 
 Most of our analysis has targeted marginal associations between risk factors and the number of wildfires or aggregate burnt area (i.e. unconditional on subsets of geographical gridpoints). These correlations were often weak, but grew stronger in subsets of the population with a greater number of wildfires. This motivated us to characterize the heterogeneity in risk of wildfires by conducting subgroup analyses. To do so, we performed quantile regression, which revealed that temperature substantially exacerbated the risk of wildfires in areas which are prone to wildfires. This is in spite of the fact that temperature was only weakly associated with  the number of wildfire events  marginally. We also performed survival analysis for the time to the first wildfire event of the year using Cox additive hazards regression, which revealed a significant association betwen temperature and the hazard of the first wildfire event.
 
