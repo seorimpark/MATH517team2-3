@@ -66,46 +66,63 @@ summary(m1)
 Below, you can find a block of output containing Poisson regression coefficients for each of the variables along with the standard errors, z-score and p-values for the coefficients. A second block follows with the inflation model which includes logit coefficients for predicting excess zeros. All of the predictions in both the count and inflation portion are statistically significant ( all p-values are very small) except for the land cover 3 in the count model. But otherwise this means that the null hypothesis that the coefficient is equal to 0 is rejected for all the coefficients. Hence this model fits the data significantly better than the null model.
 
 ## Prediction of the number of fire depending of the land covers : 
-
-We are going to divide our data set  in two sets : the training set to build the model and a test set to predict the number of fires per grid. One way to split our data is to take all the data all data from 1993 to 2014 and predict the number of fire in 2015. Or also, we can randomly select 70% of our data to train and the rest to test the data. We will use the first technique split: 
-
+ 
+Thanks to the previous results, the value of CNT will be predicted. First, let's check that the model that we construct fits the data. The principle of Cross validation will be used : take 70% of the dataset to train the model and the remaining 30% will be used to test the model.
 
 
 ```{r, echo = FALSE}
-test <- subset(df, year ==2015)
-train <- subset(df, year != 2015)
-m1<-zeroinfl(CNT~lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+, data = train)
-#check if the actual model is better to a null null mode without predictors : 
+
+#Remove the NA values from the data
+
+train<-df[!is.na(df$CNT),] 
+train<-df[!is.na(df$BA),]
+#Step 2 : Cross validation : 
+
+set.seed(123)
+#Creating training data as 70% of the dataset
+
+random_sample <- createDataPartition (na.omit(train$CNT), p = 0.7, list = FALSE)
+#Genrating training dataset form the random_sample
+
+training <-train [random_sample,]
+#Generating testing dataset from rows which are not in the training
+
+testing <- train [-random_sample,]
+#Step 3 : Build the model: 
+
+model <- zeroinfl(CNT~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+                    lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
+                    clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+clim9+
+                    clim10+ altiMean+ altiSD, data = training)
+#Prediction the test variable to check if our model is good
+prediction <- predict(model, testing)
+
+data.frame(R2 = R2(prediction, testing$CNT),
+           RMSE = rmse(prediction, testing$CNT),
+           MAE = mae(prediction, testing$CNT)) 
+```
+
+
+To measure the good fitting of our model, we compute the R squared, the mean squared error and the mean absolute error. Here the R squared is of order 0.15, this means that the model explains 15% of the variable CNT. The lower the rmse is, the better the model is able to fit a dataset. In this case the value is 6 but since our test set is of order 160 000 points, this means that the value is low for the test set. Finaly, the MAE is 2.48, on average the forecast's distance from the true value is 2.48.
+
+To improve the model, we tried to use feature selection has been in r ( backward selection). It takes about 20 minutes to run, the code is available in the file ('predictCNTandBA.R'). It only delete clim4 as feature for the model. We are going to let the model as previously. And now, we predict the missing values in our dataframe and replace the NA values by the prediction.
+
+```{r, echo = FALSE}
 mnull <- update(m1, .~1)
 pchisq (2* (logLik(m1)-logLik(mnull)), df =18, lower.tail = FALSE)
 ```
 
 
-Since we have 18 predictor variable in the model, we take 18 degrees of freedom for the chi-squred test. Our model is statistically significant.
+
+```{r, echo = FALSE}
+plot(prediction,testing$CNT, xlab = "Predicted Values", ylab = "Observed Values")
+```
+
 
 
 ```{r, echo = FALSE}
-stay = c("lc1","lc2","lc3","lc4","lc5","lc6","lc7","lc8","lc9","lc10","lc11","lc12","lc13","lc14","lc15","lc16","lc17","lc18")
-new_test = test[, which(names(df)%in% stay)]
-#test$CNT <- predict(m1, )
-new_test$CNT<- predict(m1,new_test)
-new_test
-
+effect_plot(new_test$CNT, pred = test$CNT, interval = TRUE)
 ```
 
-```{r, echo = FALSE}
-plot(new_test$CNT,test$CNT, xlab = "Predicted Values", ylab = "Observed Values")
-```
+### Prediction of BA : 
 
-```{r, echo = FALSE}
-#effect_plot(new_test$CNT, pred = test$CNT, interval = TRUE)
-#ggplot(new_test, aes(y = CNT, colour = factor(lc1))) +
- # geom_point() +
- #  geom_line() +
-  #labs(x = "Number of Children", y = "Predicted Fish Caught")
-#maybe compute the accuracy of the model 
-```
-
-```{r, echo = FALSE}
-
-```
