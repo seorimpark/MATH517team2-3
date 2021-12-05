@@ -353,13 +353,15 @@ We can see from the plot that area with stronger wind : for example in the West 
 
 Note that by definition, wind results from a change of pressure in an area, thus the concentration of fires echoes the visual analysis made earlier for the pressure.   
 
-
 ### Evaporation
 ```{r EvaVis, fig.cap="Gif of Evaporation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
 
 include_graphics("Evaporation.gif")
-
 ```
+In Figure \@ref(fig:EvaVis) is displayed the distribution of the evaporation across the country. Notice how again this distribution is strongly matching with the distribution seen in Figure \@ref(fig:TempVis). One can still notice that although the high temperatures in the West coast, the evaporation (of water) is much smaller than the one seen in Florida for example. This can come from the fact that we are singularizing one feature rather than lookin at the impact of all the features available with their interaction. 
+
+### ....
+### ....
 
 To access the intarctive part, click [this link](https://seorimpark.shinyapps.io/InterationWildfire/). In this app you will able to select the year, month, the distribution of the meteorological factors (Wind direction, Dew, Temperatures, Temperatures, Potential Evaporation, Evaporation, Solar Radiation, Thermal, Radiation, Pressure and Precipitation) the feature to display on top of the distribution (None, CNT, BA) and **finally select if the feature to be selected are averaged by month or year** (Comment Zineb: not sure about this last part).
 
