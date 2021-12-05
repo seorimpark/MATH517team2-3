@@ -289,6 +289,33 @@ include_graphics("3.png")
 
 ```
 
+## Visualisation of Wildfires considering different meteorological factors and their relations
+
+### Temperature
+```{r TempVis, fig.cap="Gif of Temperature repartition over the State and how it visually interacts with the fires and burnt area.", echo=FALSE, out.width="250%"}
+
+include_graphics("Temperature.gif")
+
+```
+### Pressure 
+```{r PresVis, fig.cap="Gif of Pressure repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
+
+include_graphics("Pressure.gif")
+
+```
+### Wind
+```{r WindVis, fig.cap="Gif of Wind repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
+
+include_graphics("Wind.gif")
+
+```
+### Evaporation
+```{r EvaVis, fig.cap="Gif of Evaporation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
+
+include_graphics("Evaporation.gif")
+
+```
+
 
 ## Wildfires and the land cover
 ### Correlation between Land covers and Wildfires
