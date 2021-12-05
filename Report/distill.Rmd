@@ -130,6 +130,9 @@ library(timereg)
 library(zeallot)
 library(ppls)
 # install.packages("https://cran.r-project.org/src/contrib/Archive/ppls/ppls_1.6-1.1.tar.gz", repos = NULL)
+library(caret)
+library(Metrics)
+library(hydroGOF)
 ````
 
 ```{r,include=FALSE}
@@ -993,6 +996,62 @@ summary(m1)
 
 
 Below, you can find a block of output containing Poisson regression coefficients for each of the variables along with the standard errors, z-score and p-values for the coefficients. A second block follows with the inflation model which includes logit coefficients for predicting excess zeros. All of the predictions in both the count and inflation portion are statistically significant ( all p-values are very small) except for the land cover 3 in the count model. But otherwise this means that the null hypothesis that the coefficient is equal to 0 is rejected for all the coefficients. Hence this model fits the data significantly better than the null model.
+
+### Prediction of the number of fire depending of the land covers : 
+ 
+Thanks to the previous results, the value of CNT will be predicted. First, let's check that the model that we construct fits the data. The principle of Cross validation will be used : take 70% of the dataset to train the model and the remaining 30% will be used to test the model.
+
+
+```{r, echo = FALSE}
+
+#Remove the NA values from the data
+
+train<-df[!is.na(df$CNT),] 
+train<-df[!is.na(df$BA),]
+#Step 2 : Cross validation : 
+
+set.seed(123)
+#Creating training data as 70% of the dataset
+
+random_sample <- createDataPartition (na.omit(train$CNT), p = 0.7, list = FALSE)
+#Genrating training dataset form the random_sample
+
+training <-train [random_sample,]
+#Generating testing dataset from rows which are not in the training
+
+testing <- train [-random_sample,]
+#Step 3 : Build the model: 
+load("../Code/my_model1.rda")
+#Prediction the test variable to check if our model is good
+prediction <- predict(model, testing)
+
+data.frame(R2 = R2(prediction, testing$CNT,na.rm = TRUE),
+           RMSE = rmse(prediction, testing$CNT),
+           MAE = mae(prediction, testing$CNT)) 
+```
+
+
+To measure the good fitting of our model, we compute the R squared, the mean squared error and the mean absolute error. Here the R squared is of order 0.15, this means that the model explains 15% of the variable CNT. The lower the rmse is, the better the model is able to fit a dataset. In this case the value is 6 but since our test set is of order 160 000 points, this means that the value is low for the test set. Finaly, the MAE is 2.48, on average the forecast's distance from the true value is 2.48.
+
+To improve the model, we tried to use feature selection has been in r ( backward selection). It takes about 20 minutes to run, the code is available in the file ('predictCNTandBA.R'). It only delete clim4 as feature for the model. We are going to let the model as previously. And now, we predict the missing values in our dataframe and replace the NA values by the prediction.
+
+
+
+
+
+```{r, echo = FALSE}
+plot(prediction,testing$CNT, xlab = "Predicted Values", ylab = "Observed Values")
+```
+
+
+
+
+```{r, echo = FALSE}
+df<-data_train_DF
+goal = df[is.na(df$CNT),]
+goal$CNT = predict (model, goal)
+data<-replace(df$CNT, is.na(df$CNT)== TRUE, goal$CNT)
+```
 
 
 ## Wildfires and meteorogical factors
