@@ -53,7 +53,7 @@ An investigation will be conducted and consists in answering these subquestions:
 To answer the above questions we will proceed as follows. 
 A descriptive and visual approach where interactive plots will be produced  with information on different dimensions: geographically, temporally and by different factors. 
 Afterwards, the distribution of land covers will be studied. Also, the analysis of the variation of land covers in the same location will be carried because of the changes that have been noticed in some areas. 
-We will then proceed with the analysis of the number of fires. To do so, the analysis of the land covers and meteorological parameters will be conducted. 
+We will then proceed with the analysis of the number of fires. To do so, the analysis of the land covers and meteorological parameters will be conducted. A part is devoted to the modelling of the effect of wind on the spread of wildfires.
 After noticing that the correlation between parameters was low, we used subsets and performed a quantile regression. 
 
 ## Sources of information / datasets
@@ -1077,9 +1077,7 @@ data.frame(R2 = R2(prediction, testing$CNT,na.rm = TRUE),
 
 To measure the good fitting of our model, we compute the R squared, the mean squared error and the mean absolute error. Here the R squared is of order 0.15, this means that the model explains 15% of the variable CNT. The lower the rmse is, the better the model is able to fit a dataset. In this case the value is 6 but since our test set is of order 160 000 points, this means that the value is low for the test set. Finally, the MAE is 2.48, on average the forecast's distance from the true value is 2.48.
 
-To improve the model, we tried to use feature selection has been in r ( backward selection). It takes about 20 minutes to run, the code is available in the file (`predictCNTandBA.R'). It only delete clim4 as feature for the model. We are going to let the model as previously. And now, we predict the missing values in our dataframe and replace the NA values by the prediction.
-
-
+To improve the model, we tried to use feature selection has been in r ( backward selection). It takes about 20 minutes to run, the code is available in the file (`predictCNTandBA.R`). It only delete clim4 as feature for the model. We are going to let the model as previously. And now, we predict the missing values in our dataframe and replace the NA values by the prediction.
 
 
 
