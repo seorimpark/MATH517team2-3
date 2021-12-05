@@ -105,7 +105,6 @@ Please note that the area proportions $lc1$ to $lc18$ do not always sum to exact
 Since the original data was given under the context of a [prediction competition with the University of Edimburgh](https://www.maths.ed.ac.uk/school-of-mathematics/eva-2021/competitions/data-challenge), there is a 8,000 of missing values in each of the $CNT$ and $BA$ columns. The missing values are not located necessarily in the same lines for the two features. 
 
 ````{r, include=FALSE}
-
 library(ggplot2)
 library(tidyr)
 library(dplyr)
@@ -296,27 +295,27 @@ include_graphics("3.png")
 
 ### Temperature
 ```{r, include=FALSE}
-df<-data
-Temp<-df %>% filter(year==2012)%>% filter (month==5) 
-
-remove = c("area","year","month","altiMean","altiSD", "lc1", "lc2", "lc3", "lc4", "lc5", "lc6", "lc7", "lc8", "lc9", "lc10", "lc11", "lc12", "lc13", "lc14", "lc15", "lc16", "lc17", "lc18")
-
-
-# Temperatures in Celsius
-
-Temp=Temp[, -which(names(df)%in% remove)]
-Temp<-Temp%>% dplyr::rename(NSwind=clim1, WEwind=clim2, 
-                            dew_temperature=clim3, temperature=clim4, 
-                            potential_evaporation=clim5,solar_radiation=clim6, thermal_radiation=clim7, pressure=clim8, evaporation=clim9, 
-                            precipitation=clim10)
-Temp <- Temp %>% mutate(Wspeed=(sqrt(NSwind^2+WEwind^2))) %>% select(-NSwind, -WEwind)
-Temp$dew_temperature = Temp$dew_temperature - 273.15
-Temp$temperature = Temp$temperature - 273.15
-Temp
-
-Temp1<-Temp %>% filter(lat==26.75 )%>% filter(lon ==-99.25 )
-Temp1['temperature']
-min(Temp['temperature'])
+# df<-data_withNA
+# Temp<-df %>% filter(year==2012)%>% filter(month==5) 
+# 
+# remove = c("area","year","month","altiMean","altiSD", "lc1", "lc2", "lc3", "lc4", "lc5", "lc6", "lc7", "lc8", "lc9", "lc10", "lc11", "lc12", "lc13", "lc14", "lc15", "lc16", "lc17", "lc18")
+# 
+# 
+# # Temperatures in Celsius
+# 
+# Temp=Temp[, -which(names(df)%in% remove)]
+# Temp<-Temp%>% dplyr::rename(NSwind=clim1, WEwind=clim2, 
+#                             dew_temperature=clim3, temperature=clim4, 
+#                             potential_evaporation=clim5,solar_radiation=clim6, thermal_radiation=clim7, pressure=clim8, evaporation=clim9, 
+#                             precipitation=clim10)
+# Temp <- Temp %>% mutate(Wspeed=(sqrt(NSwind^2+WEwind^2))) %>% select(-NSwind,-WEwind)
+# Temp$dew_temperature = Temp$dew_temperature - 273.15
+# Temp$temperature = Temp$temperature - 273.15
+# Temp
+# 
+# Temp1<-Temp %>% filter(lat==26.75 )%>% filter(lon ==-99.25 )
+# Temp1['temperature']
+# min(Temp['temperature'])
 ```
 
 May 2012 was picked to visualise the distribution of the Temperature over the country. This month and year have been selected randomly. 
@@ -664,7 +663,7 @@ addSmallLegend <- function(myPlot, pointSize = 3, textSize = 5, spaceLegend = 0.
 Year <- 2000
     
     p <- data_all %>% 
-      mutate(`Major land cover`=factor(max.col(data_all %>% select(starts_with("lc"))) ))%>% 
+      dplyr::mutate(`Major land cover`=factor(max.col(data_all %>% dplyr::select(starts_with("lc"))) ))%>% 
       filter(year==Year) %>% ggplot(aes(x=lon, y=lat, colour = `Major land cover`)) +
       geom_point(shape=15, size=2.4) +
       theme_minimal() + 
@@ -680,14 +679,16 @@ Year <- 2000
 ```{r, include= FALSE}
 names<-1:18
 df_major<-data93[ , which(names(data93) %in% c("lat","lon"))]
-for( y in 1993:2015){
-  df_temp<- data %>% 
-  mutate(`Major land cover`=factor(max.col(data %>% select(starts_with("lc"))), labels = names[1:18 %in% max.col(data  %>% select(starts_with("lc")))])) %>% filter(year==y)
+for(y in 1993:2015){
+  df_temp<- data %>%  mutate(`Major land cover`=factor(max.col(data %>% dplyr::select(starts_with("lc"))), labels = names[1:18 %in% max.col(data  %>% dplyr::select(starts_with("lc")))])) %>% filter(year==y)
   #names(df_temp)[names(df_temp) == 'Major land cover'] <- y
  # new_col_name<-paste("year",y)
  # colnames(df_temp)[colnames(df_temp) == 'Major land cover'] <- new_col_name
   #colnames(df_temp$`Major land cover`)<-y
+  
+  
   df_major<-cbind(df_major,as.numeric(unlist(df_temp[38])))}
+
 
 
 sapply(df_major, class)
@@ -722,9 +723,9 @@ The occurence of fires in a location with its predominant land cover can also be
 data2000<-filter_year(data,2000)
 
 p <- (data2000 %>% 
-  mutate(`Major land cover`=factor(max.col(data2000 %>% select(starts_with("lc"))), 
-                                   labels = names[1:18 %in% max.col(data2000 %>% select(starts_with("lc")))])) %>%
-  select(c(CNT, lat, lon, `Major land cover`)) %>%
+  mutate(`Major land cover`=factor(max.col(data2000 %>% dplyr::select(starts_with("lc"))), 
+                                   labels = names[1:18 %in% max.col(data2000 %>% dplyr::select(starts_with("lc")))])) %>%
+  dplyr::select(c(CNT, lat, lon, `Major land cover`)) %>%
   group_by(.dots=c("lat", "lon")) %>% 
   mutate(CNTy=sum(CNT, na.rm=1))) %>%
   group_by(.dots=c("lat", "lon")) %>% mutate(CNTyMean=mean(CNTy)) %>% 
@@ -868,7 +869,7 @@ corr18 = FindCorForLC(18,"spearman",0.6)
 Now by changing the method, we observe that we get that the land cover variable  11 (shrubland) and the surface net thermal radiation are correlated, same result as earlier. And, we also get that the water, urban and surface pressure are correlated. The pressure in the water is higher that the atmospheric pressure and increases with the depth. The pollution of the air explains the positive correlation between urban lands and surface pressure. To visualize our results and try to show more, we are going to regroup our data so that we can compute a correlation matrix with again spearman method. This part consists of taking variables of land covers that are similar with common characteristics ans sum them together.
 
 
-```{r, fig.cap="Correlation heatmap after regrouping the land covers with meteorological variables",fig.width=7, fig.height=7, echo =FALSE}
+```{r evap, fig.cap="Correlation heatmap after regrouping the land covers with meteorological variables",fig.width=7, fig.height=7, echo =FALSE}
 dataMod = data
 Rainfed = dataMod$CR+ dataMod$CRherb
 dataMod$Rainfed = Rainfed
@@ -892,7 +893,7 @@ corrplot(cor(dataMod, method = "spearman"), method = "color", addCoef.col="black
 ```
 
 
-This technique has been useful to represent our previous result. Also in the figure, Evaporation is negatively correlated with the trees, meaning the more trees there are, less evaporation there is. For the next project, one can think of trying to find correlation between other land cover and meteorological data by plotting the scatter plot to find a curve that approximate the data to look for non monotonic or non linear correlation.
+This technique has been useful to represent our previous result. In Figure \@ref(fig:evap), evaporation is negatively correlated with the trees, meaning the more trees there are, less evaporation there is. For the next project, one can think of trying to find correlation between other land cover and meteorological data by plotting the scatter plot to find a curve that approximate the data to look for non monotonic or non linear correlation.
 
 ### Spreading fire based on the type of land cover
 First, to analyze the spread of a fire, let us look for the distribution of the number of fires in a grid during a month. 
@@ -1023,7 +1024,7 @@ data<-data%>% dplyr::rename(NSwind=clim1, WEwind=clim2, dew_temperature=clim3, t
          precipitation=clim10)
 
 # Wind into one component 
-data <- data %>% mutate(Wspeed=(sqrt(NSwind^2+WEwind^2))) %>% select(-NSwind, -WEwind)
+data <- data %>% mutate(Wspeed=(sqrt(NSwind^2+WEwind^2))) %>% dplyr::select(-NSwind, -WEwind)
 
 # Temperatures in Celsius
 data$dew_temperature = data$dew_temperature - 273.15
