@@ -18,7 +18,6 @@ library(dplyr)
 library(maps)
 library(shinyWidgets)
 library(ggquiver)
-library(rbokeh)
 
 load("data_train_DF.RData")
 #load("~/Desktop/Github/SCV/SCV_project/MATH517team2-3/VisualisationProj3/data_train_DF.RData")
@@ -67,35 +66,6 @@ filter_year_month<-function(data,year2,month2){
   else 
     return(data)}
 
-filter_mean_year<-function(data,month2,option){
-  if((year2 %in% unique(data$year)) && (month2 %in% unique(data$month))){
-    data_filtered<-data %>%filter(month == month2)
-    if(option=="temperature"){
-      data_filtered <- aggregate(data_filtered[, c(1,2,28)], list(data_filtered$lat, data_filtered$lon), mean)
-    }
-    else if (option=="dew_temperature"){
-      
-    }
-    else if (option=="wind"){
-      
-    }
-    else if (option=="potential_evaporation"){
-    }
-    else if (option=="solar_radiation"){
-    }
-    else if (option=="thermal_radiation"){
-    }
-    else if (option=="pressure"){
-    }
-    else if (option=="evaporation"){
-    }
-    else if (option=="precipitation"){
-    }
-    return (data_filtered)
-  } 
-  else 
-    return(data)
-}
 data93<-filter_year(data,1993)
 
 lats<-unique(data_all$lat)
@@ -157,7 +127,7 @@ ui <- fluidPage(
     sidebarPanel(
       helpText(style="text-align: justify;",
                "This application allows you to visualize the change of different features over the years. Press Play for the animation.", 
-               HTML("<br/>")," (Additional text if needed) "),
+               HTML("<br/>")),
       
       sliderInput(
         "Year", "Select the year",
@@ -180,10 +150,6 @@ ui <- fluidPage(
                    choices = c("None","CNT","BA"),
                    selected = "None"
       ),
-      radioButtons("time","Mean per month/year",
-                   choices = c("None","Month","Year"),
-                   selected = "None"
-      )
     ),
     
     # Show a plot of the generated distribution
@@ -214,7 +180,6 @@ server <- function(input, output) {
     Year <-as.integer(Year)
     data_year<-filter_year_month(data_all,Year,Month)
     # group_by(.dots=c("lat", "lon")) %>% mutate(TEMPyMean=mean(data_year)) %>% 
-    if(input$time=="None"){
     if (input$Option1=="None"){
       templot <- (data_year %>% 
                     group_by(.dots=c("lat", "lon"))) %>%
@@ -274,130 +239,6 @@ server <- function(input, output) {
         theme_minimal() + 
         ggtitle(paste('Temperature in USA in month',Month,"of year", Year))
       templot
-    }}
-    else if(input$time=="Month"){
-      if (input$Option1=="None"){
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(temperature)) %>% distinct(lat, lon, temperature) %>%
-          ggplot(aes(x=lon, y=lat)) + 
-          geom_point(shape=15, size=2.5) + 
-          geom_point(aes(color=temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          #scale_color_manual(name = "Temperature",
-          #                    values = c("(-Inf,-20]" = "paleturquoise2",
-          #                               "(-20,-10]" = "blue",
-          #                               "(-10,0]" = "cornflowerblue",
-          #                               "(0,10]" = "yellow",
-          #                               "(10,20]" = "darkgoldenrod2",
-          #                               "(20,30]" = "orange",
-          #                               "(30, 40]" = "red",
-          #                               "(40, +Inf]" = "red"),
-          #                    labels = c("<-20","(-20,-10]", "(-10,0]","(0,10]","(10,20]","(20,30]","(30,40]"))+
-          labs(color="Temperature (Celsius)") +
-          theme_minimal() + 
-          ggtitle(paste('Temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-      
-      else if (input$Option1=="CNT") {
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(temperature)) %>% distinct(lat, lon, temperature,CNT) %>%
-          ggplot(aes(x=lon, y=lat)) +
-          geom_point(shape=15, size=2.5)+ #colour = "transparent")+ 
-          geom_point(aes(color=temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          geom_point(aes(size = CNT), alpha=0.6, color="red", stroke = 0, shape = 16) +
-          scale_size(breaks = c(0, 10, 50, 100), 
-                     range = c(0, 15), 
-                     name="num. of wildfires", 
-                     labels = expression(0, 10, 50, 100)) + 
-          labs(color="Temperature (Celsius)") + 
-          theme_minimal() + 
-          ggtitle(paste('Temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-      else{
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(temperature)) %>% distinct(lat, lon, temperature,BA) %>%
-          ggplot(aes(x=lon, y=lat)) +
-          geom_point(shape=15, size=2.5)+ #colour = "transparent")+ 
-          geom_point(aes(color=temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          geom_point(aes(size = log2(BA+1)), alpha=0.5, color="red", stroke = 0, shape = 16) +
-          scale_size(breaks = c(0,5,10), 
-                     range = c(0, 8), 
-                     name="Burnt Area (Acres)", 
-                     labels = expression(0, 2^5,2^10)) + 
-          labs(color="Temperature (Celsius)")+
-          theme_minimal() + 
-          ggtitle(paste('Temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-    }
-    else {
-      if (input$Option1=="None"){
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(temperature)) %>% distinct(lat, lon, temperature) %>%
-          ggplot(aes(x=lon, y=lat)) + 
-          geom_point(shape=15, size=2.5) + 
-          geom_point(aes(color=temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          #scale_color_manual(name = "Temperature",
-          #                    values = c("(-Inf,-20]" = "paleturquoise2",
-          #                               "(-20,-10]" = "blue",
-          #                               "(-10,0]" = "cornflowerblue",
-          #                               "(0,10]" = "yellow",
-          #                               "(10,20]" = "darkgoldenrod2",
-          #                               "(20,30]" = "orange",
-          #                               "(30, 40]" = "red",
-          #                               "(40, +Inf]" = "red"),
-          #                    labels = c("<-20","(-20,-10]", "(-10,0]","(0,10]","(10,20]","(20,30]","(30,40]"))+
-          labs(color="Temperature (Celsius)") +
-          theme_minimal() + 
-          ggtitle(paste('Temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-      
-      else if (input$Option1=="CNT") {
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(temperature)) %>% distinct(lat, lon, temperature,CNT) %>%
-          ggplot(aes(x=lon, y=lat)) +
-          geom_point(shape=15, size=2.5)+ #colour = "transparent")+ 
-          geom_point(aes(color=temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          geom_point(aes(size = CNT), alpha=0.6, color="red", stroke = 0, shape = 16) +
-          scale_size(breaks = c(0, 10, 50, 100), 
-                     range = c(0, 15), 
-                     name="num. of wildfires", 
-                     labels = expression(0, 10, 50, 100)) + 
-          labs(color="Temperature (Celsius)") + 
-          theme_minimal() + 
-          ggtitle(paste('Temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-      else{
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(temperature)) %>% distinct(lat, lon, temperature,BA) %>%
-          ggplot(aes(x=lon, y=lat)) +
-          geom_point(shape=15, size=2.5)+ #colour = "transparent")+ 
-          geom_point(aes(color=temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          geom_point(aes(size = log2(BA+1)), alpha=0.5, color="red", stroke = 0, shape = 16) +
-          scale_size(breaks = c(0,5,10), 
-                     range = c(0, 8), 
-                     name="Burnt Area (Acres)", 
-                     labels = expression(0, 2^5,2^10)) + 
-          labs(color="Temperature (Celsius)")+
-          theme_minimal() + 
-          ggtitle(paste('Temperature in USA in month',Month,"of year", Year))
-        templot
-      }
     }
   })
   
@@ -408,68 +249,6 @@ server <- function(input, output) {
     Year <-as.integer(Year)
     data_year<-filter_year_month(data_all,Year,Month)
     # group_by(.dots=c("lat", "lon")) %>% mutate(TEMPyMean=mean(data_year)) %>% 
-    if(input$time=="None"){
-      if (input$Option1=="None"){
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(dew_temperature)) %>% distinct(lat, lon, dew_temperature) %>%
-          ggplot(aes(x=lon, y=lat)) + 
-          geom_point(shape=15, size=2.5) + 
-          geom_point(aes(color=dew_temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          #scale_color_manual(name = "Temperature",
-          #                    values = c("(-Inf,-20]" = "paleturquoise2",
-          #                               "(-20,-10]" = "blue",
-          #                               "(-10,0]" = "cornflowerblue",
-          #                               "(0,10]" = "yellow",
-          #                               "(10,20]" = "darkgoldenrod2",
-          #                               "(20,30]" = "orange",
-          #                               "(30, 40]" = "red",
-          #                               "(40, +Inf]" = "red"),
-          #                    labels = c("<-20","(-20,-10]", "(-10,0]","(0,10]","(10,20]","(20,30]","(30,40]"))+
-          labs(color="Temperature (Celsius)") +
-          theme_minimal() + 
-          ggtitle(paste('Dew temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-      
-      else if (input$Option1=="CNT") {
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(dew_temperature)) %>% distinct(lat, lon, dew_temperature,CNT) %>%
-          ggplot(aes(x=lon, y=lat)) +
-          geom_point(shape=15, size=2.5)+ #colour = "transparent")+ 
-          geom_point(aes(color=dew_temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          geom_point(aes(size = CNT), alpha=0.6, color="red", stroke = 0, shape = 16) +
-          scale_size(breaks = c(0, 10, 50, 100), 
-                     range = c(0, 15), 
-                     name="num. of wildfires", 
-                     labels = expression(0, 10, 50, 100)) + 
-          labs(color="Temperature (Celsius)") + 
-          theme_minimal() + 
-          ggtitle(paste('Dew temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-      else{
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(dew_temperature)) %>% distinct(lat, lon, dew_temperature,BA) %>%
-          ggplot(aes(x=lon, y=lat)) +
-          geom_point(shape=15, size=2.5)+ #colour = "transparent")+ 
-          geom_point(aes(color=dew_temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          geom_point(aes(size = log2(BA+1)), alpha=0.5, color="red", stroke = 0, shape = 16) +
-          scale_size(breaks = c(0,5,10), 
-                     range = c(0, 8), 
-                     name="Burnt Area (Acres)", 
-                     labels = expression(0, 2^5,2^10)) + 
-          labs(color="Temperature (Celsius)")+
-          theme_minimal() + 
-          ggtitle(paste('Dew temperature in USA in month',Month,"of year", Year))
-        templot
-      }}
-    else if(input$time=="Month"){
       if (input$Option1=="None"){
         templot <- (data_year %>% 
                       group_by(.dots=c("lat", "lon"))) %>%
@@ -530,69 +309,6 @@ server <- function(input, output) {
           ggtitle(paste('Dew temperature in USA in month',Month,"of year", Year))
         templot
       }
-    }
-    else {
-      if (input$Option1=="None"){
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(dew_temperature)) %>% distinct(lat, lon, dew_temperature) %>%
-          ggplot(aes(x=lon, y=lat)) + 
-          geom_point(shape=15, size=2.5) + 
-          geom_point(aes(color=dew_temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          #scale_color_manual(name = "Temperature",
-          #                    values = c("(-Inf,-20]" = "paleturquoise2",
-          #                               "(-20,-10]" = "blue",
-          #                               "(-10,0]" = "cornflowerblue",
-          #                               "(0,10]" = "yellow",
-          #                               "(10,20]" = "darkgoldenrod2",
-          #                               "(20,30]" = "orange",
-          #                               "(30, 40]" = "red",
-          #                               "(40, +Inf]" = "red"),
-          #                    labels = c("<-20","(-20,-10]", "(-10,0]","(0,10]","(10,20]","(20,30]","(30,40]"))+
-          labs(color="Temperature (Celsius)") +
-          theme_minimal() + 
-          ggtitle(paste('Dew temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-      
-      else if (input$Option1=="CNT") {
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(dew_temperature)) %>% distinct(lat, lon, dew_temperature,CNT) %>%
-          ggplot(aes(x=lon, y=lat)) +
-          geom_point(shape=15, size=2.5)+ #colour = "transparent")+ 
-          geom_point(aes(color=dew_temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          geom_point(aes(size = CNT), alpha=0.6, color="red", stroke = 0, shape = 16) +
-          scale_size(breaks = c(0, 10, 50, 100), 
-                     range = c(0, 15), 
-                     name="num. of wildfires", 
-                     labels = expression(0, 10, 50, 100)) + 
-          labs(color="Temperature (Celsius)") + 
-          theme_minimal() + 
-          ggtitle(paste('Dew temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-      else{
-        templot <- (data_year %>% 
-                      group_by(.dots=c("lat", "lon"))) %>%
-          arrange(desc(dew_temperature)) %>% distinct(lat, lon, dew_temperature,BA) %>%
-          ggplot(aes(x=lon, y=lat)) +
-          geom_point(shape=15, size=2.5)+ #colour = "transparent")+ 
-          geom_point(aes(color=dew_temperature), stroke = 1, shape = 16,size=2.8) +#(color=cut(temperature, c(-20,-10, 0,10,20,30,40))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D")+
-          geom_point(aes(size = log2(BA+1)), alpha=0.5, color="red", stroke = 0, shape = 16) +
-          scale_size(breaks = c(0,5,10), 
-                     range = c(0, 8), 
-                     name="Burnt Area (Acres)", 
-                     labels = expression(0, 2^5,2^10)) + 
-          labs(color="Temperature (Celsius)")+
-          theme_minimal() + 
-          ggtitle(paste('Dew temperature in USA in month',Month,"of year", Year))
-        templot
-      }
-    }
   })
   
   output$wind <- renderPlot({
@@ -609,7 +325,7 @@ server <- function(input, output) {
         ggplot(aes(x=lon, y=lat)) +
         geom_quiver(aes(u=WEwind,v=NSwind),vecsize=6,center=TRUE) +
         theme_minimal() + 
-        ggtitle(paste('Temperature in USA in month',Month,"of year", Year))
+        ggtitle(paste('Direction of wind in USA in month',Month,"of year", Year))
       templot
     }
     else if (input$Option1=="CNT") {
@@ -626,7 +342,7 @@ server <- function(input, output) {
                    name="num. of wildfires", 
                    labels = expression(0, 10, 50, 100)) + 
         theme_minimal() + 
-        ggtitle(paste('Solar radiation in USA in month',Month,"of year", Year))
+        ggtitle(paste('Direction of wind in USA in month',Month,"of year", Year))
       templot
     }
     else{
@@ -641,7 +357,7 @@ server <- function(input, output) {
                    name="Burnt Area (Acres)", 
                    labels = expression(0, 2^5,2^10)) + 
         theme_minimal() + 
-        ggtitle(paste('Solar radiation in USA in month',Month,"of year", Year))
+        ggtitle(paste('Direction of wind in USA in month',Month,"of year", Year))
       templot
     }
   })
@@ -722,7 +438,7 @@ server <- function(input, output) {
         ggplot(aes(x=lon, y=lat)) +
         geom_point(shape=15, size=2.5)+ 
         geom_point(aes(color=thermal_radiation),stroke = 1, shape = 16,size=2.8)+ #c(-2*10**7,-10**7,-8*10**6,-6*10**6,-4*10**6,-2*10**6,-10**5))), stroke = 1, shape = 16,size=2.6) +
-          scale_color_viridis_c(option="D",direction = -1)+
+          scale_color_viridis_c(option="D")+
         labs(color="Thermal radiation (J/m2)")+
         theme_minimal() + 
         ggtitle(paste('Thermal radiation in USA in month',Month,"of year", Year))
@@ -737,7 +453,7 @@ server <- function(input, output) {
         ggplot(aes(x=lon, y=lat)) +
         geom_point(shape=15, size=2.5)+ 
         geom_point(aes(color=thermal_radiation),stroke = 1, shape = 16,size=2.8)+ #c(-2*10**7,-10**7,-8*10**6,-6*10**6,-4*10**6,-2*10**6,-10**5))), stroke = 1, shape = 16,size=2.6) +
-        scale_color_viridis_c(option="D",direction = -1)+
+        scale_color_viridis_c(option="D")+
         geom_point(aes(size = CNT), alpha=0.6, color="red", stroke = 0, shape = 16) +
         scale_size(breaks = c(0, 10, 50, 100), 
                    range = c(0, 15), 
@@ -755,7 +471,7 @@ server <- function(input, output) {
         ggplot(aes(x=lon, y=lat)) +
         geom_point(shape=15, size=2.5)+ 
         geom_point(aes(color=thermal_radiation),stroke = 1, shape = 16,size=2.8)+ #c(-2*10**7,-10**7,-8*10**6,-6*10**6,-4*10**6,-2*10**6,-10**5))), stroke = 1, shape = 16,size=2.6) +
-        scale_color_viridis_c(option="D",direction = -1)+
+        scale_color_viridis_c(option="D")+
         geom_point(aes(size = log2(BA+1)), alpha=0.5, color="red", stroke = 0, shape = 16) +
         scale_size(breaks = c(0,5,10), 
                    range = c(0, 8), 

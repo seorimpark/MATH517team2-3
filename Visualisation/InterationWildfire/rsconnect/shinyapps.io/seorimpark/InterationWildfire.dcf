@@ -5,9 +5,9 @@ account: seorimpark
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5266422
-bundleId: 5328175
+bundleId: 5329738
 url: https://seorimpark.shinyapps.io/InterationWildfire/
-when: 1638654060.30851
-lastSyncTime: 1638654060.30852
+when: 1638707936.47804
+lastSyncTime: 1638707936.47807
 asMultiple: FALSE
 asStatic: FALSE

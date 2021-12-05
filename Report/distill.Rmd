@@ -296,6 +296,8 @@ include_graphics("3.png")
 
 ## Visualisation of Wildfires considering different meteorological factors and their relations
 
+In order to visualize the meteorological factors and compare with the occurrences of wildfires, an interactive plot was made ([link](https://seorimpark.shinyapps.io/InterationWildfire/)). The plot consists of the different coordinates of the United States, colored in a continuous scale based on the values of the chosen meteorological factor. In this app you will able to select the year, month, the distribution of the meteorological factors (Wind direction, Dew Temperatures, Temperatures, Potential Evaporation, Evaporation, Solar Radiation, Thermal, Radiation, Pressure and Precipitation), the feature to display on top of the distribution (None, CNT, BA) which are represented in red circles. The radii of the circles are taken to be linear to the number of wildfires, but for burnt area we are taking $log_2(BA+1)$ for a better visualization. Below are the descriptive analysis of each factors with respect to occurrences of wildfire, and the case of May 2012 was taken as an example. We took one plot without information about wildfire, one with the number of wildfires and one with the burnt area to compare with the factors.
+
 ### Temperature
 ```{r, include=FALSE}
 # df<-data_withNA
@@ -321,7 +323,7 @@ include_graphics("3.png")
 # min(Temp['temperature'])
 ```
 
-May 2012 was picked to visualise the distribution of the Temperature over the country. This month and year have been selected randomly. 
+
 Figure \@ref(fig:TempVis) is displayed a gif containing three different graphs. First the distribution of the Temperatures across the country in May 2012. Then, the same plot is considered but this time the number of fires is added. Lastly, the same plot as prior but this time the burnt area is added on top. 
 
 We can see from the plot that the temperatures are higher reaching 28.15 degrees celsius in the south of the country, near the border of Mexico. Whereas the coldest state is Montana with an average of 1.37 degrees celsius during the month of May. 
@@ -333,6 +335,7 @@ Looking at the number of fires, considering a preliminary visual analysis and as
 include_graphics("Temperature.gif")
 
 ```
+
 ### Pressure 
 ```{r PresVis, fig.cap="Gif of Pressure repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
 
@@ -340,11 +343,23 @@ include_graphics("Pressure.gif")
 
 ```
 
-Here again May 2021 was picked for this visualisation. The same way as in Figure \@ref(fig:TempVis), Figure \@ref(fig:PresVis) represents the pressure distribution and how it interacts with different attributes. One first strong observation when comparing Figures \@ref(fig:TempVis) and \@ref(fig:PresVis) is that the distribution of both meteorological factors is extremely similar. Indeed, areas with lower temperatures coicide with lower pressure and same applied in the converse situation. This is follows from the Ideal Gas Law which states that: 
+The same way as in Figure \@ref(fig:TempVis), Figure \@ref(fig:PresVis) represents the pressure distribution and how it interacts with different attributes. One first strong observation when comparing Figures \@ref(fig:TempVis) and \@ref(fig:PresVis) is that the distribution of both meteorological factors is extremely similar. Indeed, areas with lower temperatures coicide with lower pressure and same applied in the converse situation. This is follows from the Ideal Gas Law which states that: 
 $$P V = n R T $$
 Where P, V and T are the pressure, volume and temperature; n is the amount of substance; and R is the ideal gas constant. Using this, we can see why the pressure and temperature are perfectly correlated. 
 
 Concerning the number of fires and burnt areas, the same conclusion as for the temperature can be applied. 
+
+### Dewpoint Temperature
+
+```{r DTempVis, fig.cap="Gif of Dewpoint Temperature repartition over the State and how it visually interacts with the fires and burnt area.", echo=FALSE, out.width="250%"}
+
+include_graphics("DewTemp.gif")
+
+```
+
+Figure \@ref(fig:DTempVis) is a group of plots of the distribution of dewpoint temperature (temperature at 2m from ground to which air must be cooled to become saturated with water vapor) across the United States with the same condition as Figure \@ref(fig:TempVis). 
+
+The dewpoint temperature is in relation with the humidity of the place : a coordinate with a high dewpoint temperature would be more humid. On the map, we can observe that the regions in the south-east tend to have a high dewpoint temperature, meaning they are more humid than other regions. However, we can see that wildfires occur in highly humid regions as well, but we can verify that the burnt areas are bigger in size overall in the western dry regions.
 
 ### Wind
 ```{r WindVis, fig.cap="Gif of Wind repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
@@ -353,7 +368,7 @@ include_graphics("Wind.gif")
 
 ```
 
-Again May 2021 was picked for this visualisation. In Figure \@ref(fig:WindVis) are displayed the wind directions and their intensities using arrows that differ in direction and length. Due to the large number of data points, only one arrow out of two is displayed.
+In Figure \@ref(fig:WindVis) are displayed the wind directions and their intensities using arrows that differ in direction and length. Due to the large number of data points, only one arrow out of two is displayed.
 
 We first note that the wind comes from the south to north, and from both the west and the east towards the center of the country. 
 
@@ -367,12 +382,41 @@ Recall that by definition, wind results from a change of pressure in an area, th
 include_graphics("Evaporation.gif")
 ```
 
-Again May 2021 was picked for this visualisation. In Figure \@ref(fig:EvaVis) is displayed the distribution of the evaporation across the country. Notice how again this distribution is strongly matching with the distribution seen in Figure \@ref(fig:TempVis). One can still notice that although the high temperatures in the West coast, the evaporation (of water) is much smaller than the one seen in Florida for example. This can come from the fact that we are singularizing one feature rather than looking at the impact of all the features available with their interaction. 
+In Figure \@ref(fig:EvaVis) is displayed the distribution of the evaporation across the country. Notice how again this distribution is strongly matching with the distribution seen in Figure \@ref(fig:TempVis). 
 
-### ....
-### ....
+One can still notice that although the high temperatures in the West coast, the evaporation (of water) is much smaller than the one seen in Florida for example. This can come from the fact that we are singularizing one feature rather than looking at the impact of all the features available with their interaction. 
 
-To access the intarctive part, click [this link](https://seorimpark.shinyapps.io/InterationWildfire/). In this app you will able to select the year, month, the distribution of the meteorological factors (Wind direction, Dew, Temperatures, Temperatures, Potential Evaporation, Evaporation, Solar Radiation, Thermal, Radiation, Pressure and Precipitation), the feature to display on top of the distribution (None, CNT, BA) and **finally select if the feature to be selected are averaged by month or year** (Comment Zineb: not sure about this last part).
+```{r PotEvapVis, fig.cap="Gif of Potential Evaporation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
+
+include_graphics("PotEvap.gif")
+```
+
+Figure \@ref(fig:PotEvapVis) displays the potential evaporation (the amount of evaporation of water that would take place if a sufficient source of water were available) distribution across the United States. The plot is very different from Figure \@ref(fig:EvaVis) where the real amount of evaporation was measured. Although the occurrences of wildfire are spread out, we can observe that the serious ones with larger burnt areas tend to occur in a place with higher potential evaporation (except the cases in the middle).
+
+### Solar and thermal radiation
+```{r SolVis, fig.cap="Gif of solar radiation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
+
+include_graphics("Solar.gif")
+```
+
+```{r ThermVis, fig.cap="Gif of thermal radiation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
+
+include_graphics("Therm.gif")
+```
+
+Figure \@ref(fig:SolVis) and \@ref(fig:ThermVis) are the plots of distribution of solar radiation (net flux of shortwave radiation; mostly radiation coming from the sun) and thermal radiation (net flux of longwave radiation; mostly radiation emitted by the surface) across the United States. We can first verify that the higher the solar radiation is, the lower the thermal radiation is. Also, we can observe that the distribution of solar radiation is similar to the distribution of evaporation (Figure \@ref(fig:EvaVis)) and the one of thermal distribution is close to the one of dewpoint temperature (Figure \@ref(fig:DTempVis)). 
+
+We can draw a similar conclusion to the case of dewpoint temperature : the occurrences of wildfire do not seem to have much relation, but in the western regions the burnt area seem to follow the regions where the solar radiation is high (and where the thermal radiation is low).
+
+
+### Precipitation
+
+```{r PrecVis, fig.cap="Gif of Precipitation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
+
+include_graphics("Prec.gif")
+```
+
+Figure \@ref(fig:PrecVis) displays the distribution of precipitation across the United States. We can observe that the regions in the west tend to have less rain, thus we have some big wildfire cases. However we have an exception : on the west side of Minnesota, where the precipitation was one of the highest in the country, still had a lot of severe wildfire occurrences. We can conclude that the amount of precipitation does not always tell about the amount and the size of wildfires.
 
 ## Wildfires and the land cover
 ### Correlation between Land covers and Wildfires
