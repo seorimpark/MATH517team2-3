@@ -293,6 +293,7 @@ include_graphics("3.png")
 
 ### Temperature
 ```{r, include=FALSE}
+df<-data
 Temp<-df %>% filter(year==2012)%>% filter (month==5) 
 
 remove = c("area","year","month","altiMean","altiSD", "lc1", "lc2", "lc3", "lc4", "lc5", "lc6", "lc7", "lc8", "lc9", "lc10", "lc11", "lc12", "lc13", "lc14", "lc15", "lc16", "lc17", "lc18")
@@ -315,12 +316,12 @@ Temp1['temperature']
 min(Temp['temperature'])
 ```
 
-May 2012 was picked to visualise the distribution of the Temperature over the country. This month has been selected randomly. 
-Figure \@ref(fig:TempVis) is displayed a gif containing three different graphs. First the distribution of the Temperatures across the country in May 2012. Then, the same plot but this time the number of fires was added on top. And lastly, the same plot as prior but this time the burnt area is added on top. 
+May 2012 was picked to visualise the distribution of the Temperature over the country. This month and year have been selected randomly. 
+Figure \@ref(fig:TempVis) is displayed a gif containing three different graphs. First the distribution of the Temperatures across the country in May 2012. Then, the same plot is considered but this time the number of fires is added. Lastly, the same plot as prior but this time the burnt area is added on top. 
 
-We can see from the plot that the temperatures are higher reaching 28.15 degrees celsius near the border of Mexico. Whereas the coldest state is Montana with an average of 1.37 degrees celsius during the month of May. 
+We can see from the plot that the temperatures are higher reaching 28.15 degrees celsius in the south of the country, near the border of Mexico. Whereas the coldest state is Montana with an average of 1.37 degrees celsius during the month of May. 
 
-Looking at the number of fires, we can see that as a preliminary visual analysis, the fires occur in the hottest regions. The same way, the largest burnt area cluster in the hottest areas. More rigorous analysis will follow back. 
+Looking at the number of fires, considering a preliminary visual analysis and as expected, the fires occur in the hottest regions. The same way, the largest burnt area cluster in the hottest areas. More rigorous analysis looking through this will follow back. 
 
 ```{r TempVis, fig.cap="Gif of Temperature repartition over the State and how it visually interacts with the fires and burnt area.", echo=FALSE, out.width="250%"}
 
@@ -334,11 +335,11 @@ include_graphics("Pressure.gif")
 
 ```
 
-The same way as in Figure \@ref(fig:TempVis), Figure \@ref(fig:TempVis) represents the pressure distribution and their different attributes. One first strong observation when comparing Figures \@ref(fig:TempVis) and \@ref(fig:TempVis) is that the distribution of both meteorological factor are extremely similar. Indeed, areas with lower temperatures coicide with lower pressure and same applied in the converse situation. This is explained by the Ideal gas law which states that: 
+Here again May 2021 was picked for this visualisation. The same way as in Figure \@ref(fig:TempVis), Figure \@ref(fig:PresVis) represents the pressure distribution and how it interacts with different attributes. One first strong observation when comparing Figures \@ref(fig:TempVis) and \@ref(fig:PresVis) is that the distribution of both meteorological factors is extremely similar. Indeed, areas with lower temperatures coicide with lower pressure and same applied in the converse situation. This is follows from the Ideal Gas Law which states that: 
 $$P V = n R T $$
-Where P, V and T are the pressure, volume and temperature; n is the amount of substance; and R is the ideal gas constant. We can see that the pressure and temperature are perfectly correlated. 
+Where P, V and T are the pressure, volume and temperature; n is the amount of substance; and R is the ideal gas constant. Using this, we can see why the pressure and temperature are perfectly correlated. 
 
-Conserning the number of fires and burnt areas, the same conclusion as for the temperature can be applied. 
+Concerning the number of fires and burnt areas, the same conclusion as for the temperature can be applied. 
 
 ### Wind
 ```{r WindVis, fig.cap="Gif of Wind repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
@@ -347,23 +348,26 @@ include_graphics("Wind.gif")
 
 ```
 
-In Figure \@ref(fig:WindVis) are displayed the wind directions and their intensities using arrows that differ in direction and length. Due to the large number of data points, only one arrow out of two is displayed. We first note that the wind comes from the south to north, both west and east to center. 
+Again May 2021 was picked for this visualisation. In Figure \@ref(fig:WindVis) are displayed the wind directions and their intensities using arrows that differ in direction and length. Due to the large number of data points, only one arrow out of two is displayed.
 
-We can see from the plot that area with stronger wind : for example in the West coast and in the far south, fires are more predominant and the burnt area are more important. 
+We first note that the wind comes from the south to north, and from both the west and the east towards the center of the country. 
 
-Note that by definition, wind results from a change of pressure in an area, thus the concentration of fires echoes the visual analysis made earlier for the pressure.   
+We can also see from the plot that area with stronger wind,  for example in the West coast and in the far south, fires are more predominant and the burnt area are more important. 
+
+Recall that by definition, wind results from a change of pressure in an area, thus the concentration of fires echoes the visual analysis made earlier for the pressure.   
 
 ### Evaporation
 ```{r EvaVis, fig.cap="Gif of Evaporation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
 
 include_graphics("Evaporation.gif")
 ```
-In Figure \@ref(fig:EvaVis) is displayed the distribution of the evaporation across the country. Notice how again this distribution is strongly matching with the distribution seen in Figure \@ref(fig:TempVis). One can still notice that although the high temperatures in the West coast, the evaporation (of water) is much smaller than the one seen in Florida for example. This can come from the fact that we are singularizing one feature rather than lookin at the impact of all the features available with their interaction. 
+
+Again May 2021 was picked for this visualisation. In Figure \@ref(fig:EvaVis) is displayed the distribution of the evaporation across the country. Notice how again this distribution is strongly matching with the distribution seen in Figure \@ref(fig:TempVis). One can still notice that although the high temperatures in the West coast, the evaporation (of water) is much smaller than the one seen in Florida for example. This can come from the fact that we are singularizing one feature rather than looking at the impact of all the features available with their interaction. 
 
 ### ....
 ### ....
 
-To access the intarctive part, click [this link](https://seorimpark.shinyapps.io/InterationWildfire/). In this app you will able to select the year, month, the distribution of the meteorological factors (Wind direction, Dew, Temperatures, Temperatures, Potential Evaporation, Evaporation, Solar Radiation, Thermal, Radiation, Pressure and Precipitation) the feature to display on top of the distribution (None, CNT, BA) and **finally select if the feature to be selected are averaged by month or year** (Comment Zineb: not sure about this last part).
+To access the intarctive part, click [this link](https://seorimpark.shinyapps.io/InterationWildfire/). In this app you will able to select the year, month, the distribution of the meteorological factors (Wind direction, Dew, Temperatures, Temperatures, Potential Evaporation, Evaporation, Solar Radiation, Thermal, Radiation, Pressure and Precipitation), the feature to display on top of the distribution (None, CNT, BA) and **finally select if the feature to be selected are averaged by month or year** (Comment Zineb: not sure about this last part).
 
 ## Wildfires and the land cover
 ### Correlation between Land covers and Wildfires
@@ -1192,11 +1196,11 @@ plot(unique(data$year),mean.temp, 'l', xlab='Year',ylab='Yearly mean temperature
 ## Survival analysis on the incidence of wildfires
 
 
-Having considered the subgroup of gridpoints that are highly susceptible to wildfires, we next  use survival analysis to study how temperature affects the incidence of wildfires. We will use Cox additive hazards regression to characterize how temperature affects the survival probability with respect to wildfire events, defined as the probability of not experiencing any wildfire event by month $t$ during a given year. To fix ideas, we first consider the survival during year 2015. The Kaplan-Meier estimator of the survival probability is given by
+Having considered the subgroup of gridpoints that are highly susceptible to wildfires, we next  use survival analysis to study how temperature affects the incidence of wildfires. We will use Cox additive hazards regression to characterize how temperature affects the survival probability with respect to wildfire events. The survival probability is defined as the probability of not experiencing any wildfire event by month $t$ during a given year. To fix ideas, we first consider the survival during year 2015. The Kaplan-Meier estimator of the survival probability is given by
 
 $$ \widehat{P}(T>t) = \prod_{T_i\leq t} \left( 1- \frac{\Delta N_{T_i}}{Z(T_i)} \right)~,$$
 
-where $T_i$ is the time of the first wildfire in the geographical gridpoint $i$ during the year 2015, and $Z(T_i)$ is the number of gridpoints at risk of experience a first wildfire event just before time $T_i$.  We have plotted the Kaplan-Meier estimator for the year 2015 in Fig. \@ref(fig:survival) below. As can be seen in the plot, the first wildfire often occurs during March.
+where $T_i$ is the time of the first wildfire in the geographical gridpoint $i$ during the year 2015 and $Z(T_i)$ is the number of gridpoints at risk of experience a first wildfire event just before time $T_i$.  We have plotted the Kaplan-Meier estimator for the year 2015 in Fig. \@ref(fig:survival) below. As can be seen in the plot, the first wildfire often occurs during March.
 
 
 
@@ -1311,7 +1315,7 @@ Most years, the confidence intervals do not include the null value of the hazard
 
 ## Conclusion
 
-In this investigation, we have studied three sets of risk factors for wildfires: (1) the time period (2) the type of land cover and (3) local meteorological conditions. The interactive map as a function of time let us analyse the influence of the time period within a year and throughout the years. Although the map looked very heterogeneous, some particular trends have been observed for a specific time period in a year. Also, the global trend for burnt area was periodic, and slightly increasing throughout the years whereas the number of wildfires did not. In our exploration of land cover, we found that the proportion of urban areas has been increasing from 1993-2005. Fires are often caused by urban activity, so this trend could lead to more wildfires in the future. In our meteorological exploration, we found that the cause-effect relation of meteorological variables on wildfires may be highly multifactorial. The correlations between the number of fires and meterological varibles were small marginally in the population. To disentangle the effect of meterological variables from the effect of land cover on fires, we examined the joint distribution of these variables. We found that the correlation between meteorological variables and land cover types were weaker than expected, which makes it more feasible to interpret these variables as independent causes of wildfires.
+In this investigation, we have studied three sets of risk factors for wildfires: (1) the time period (2) the type of land cover and (3) local meteorological conditions. Before delving into the detailed analyses that would allow us to answer these questions, we conducted a preliminary and entirely visual investigation to see the interaction between the number of fires and the area burned with the different climatic and spatial variables. With the results obtained, we gained a first idea and expectations for more accurate findings that will follow. The interactive map as a function of time let us analyse the influence of the time period within a year and throughout the years. Although the map looked very heterogeneous, some particular trends have been observed for a specific time period in a year. Also, the global trend for burnt area was periodic, and slightly increasing throughout the years whereas the number of wildfires did not. In our exploration of land cover, we found that the proportion of urban areas has been increasing from 1993-2005. Fires are often caused by urban activity, so this trend could lead to more wildfires in the future. In our meteorological exploration, we found that the cause-effect relation of meteorological variables on wildfires may be highly multifactorial. The correlations between the number of fires and meterological varibles were small marginally in the population. To disentangle the effect of meterological variables from the effect of land cover on fires, we examined the joint distribution of these variables. We found that the correlation between meteorological variables and land cover types were weaker than expected, which makes it more feasible to interpret these variables as independent causes of wildfires.
 
 Most of our analysis has targeted marginal associations between risk factors and the number of wildfires or aggregate burnt area (i.e. unconditional on subsets of geographical gridpoints). These correlations were often weak, but grew stronger in subsets of the population with a greater number of wildfires. This motivated us to characterize the heterogeneity in risk of wildfires by conducting subgroup analyses. To do so, we performed quantile regression, which revealed that temperature substantially exacerbated the risk of wildfires in areas which are prone to wildfires. This is in spite of the fact that temperature was only weakly associated with  the number of wildfire events  marginally. We also performed survival analysis for the time to the first wildfire event of the year using Cox additive hazards regression, which revealed a significant association betwen temperature and the hazard of the first wildfire event.
 
