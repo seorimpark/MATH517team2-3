@@ -70,10 +70,11 @@ model <- zeroinfl(CNT~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
                     lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
                     clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+clim9+
                     clim10+ altiMean+ altiSD, data = training)
+save(model, file = "my_model1.rda")
 #Prediction the test variable to check if our model is good
 prediction <- predict(model, testing)
 
-data.frame(R2 = R2(prediction, testing$CNT),
+data.frame(R2 = R2(prediction, testing$CNT,na.rm = TRUE),
            RMSE = rmse(prediction, testing$CNT),
            MAE = mae(prediction, testing$CNT)) 
 ```
@@ -95,9 +96,13 @@ plot(prediction,testing$CNT, xlab = "Predicted Values", ylab = "Observed Values"
 
 
 ```{r, echo = FALSE}
+load("../Code/my_model1.rda")
+df<-data_train_DF
 goal = df[is.na(df$CNT),]
 goal$CNT = predict (model, goal)
 data<-replace(df$CNT, is.na(df$CNT)== TRUE, goal$CNT)
+df
+is.na(df$CNT) == TRUE
 ```
 
 
@@ -108,9 +113,26 @@ data<-replace(df$CNT, is.na(df$CNT)== TRUE, goal$CNT)
 sp = sample (nrow(training), 10000)
 train = training[sp,]
 train$BA = as.integer(train$BA)
-select <- zeroinfl(BA~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+select <- zeroinfl(BA~CNT+ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
                    lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
                    clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+ clim9 +
                    clim10+ altiMean+ altiSD, data = train)
-step(select, direction = "backward")
+prediction <- predict(select, testing)
+data.frame(R2 = R2(prediction, testing$BA,na.rm = TRUE),
+           RMSE = rmse(prediction, testing$BA),
+           MAE = mae(prediction, testing$BA)) 
 ```
+
+Not good model, let's try another one 
+```{r, echo = FALSE}
+model2 <-glm (BA~ CNT+ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+                   lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
+                   clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+ clim9 +
+                   clim10+ altiMean+ altiSD, data = training, family = 'gaussian')
+prediction2 <-predict (model2, testing)
+data.frame(R2 = R2(prediction2, testing$CNT,na.rm = TRUE),
+           RMSE = rmse(prediction2, testing$BA),
+           MAE = mae(prediction2, testing$BA))
+```
+
+Best model that we got. 
