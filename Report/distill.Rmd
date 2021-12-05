@@ -347,8 +347,11 @@ include_graphics("Wind.gif")
 
 ```
 
-In Figure \@ref(fig:WindVis) are displayed the wind directions and their intensities
+In Figure \@ref(fig:WindVis) are displayed the wind directions and their intensities using arrows that differ in direction and length. Due to the large number of data points, only one arrow out of two is displayed. We first note that the wind comes from the south to north, both west and east to center. 
 
+We can see from the plot that area with stronger wind : for example in the West coast and in the far south, fires are more predominant and the burnt area are more important. 
+
+Note that by definition, wind results from a change of pressure in an area, thus the concentration of fires echoes the visual analysis made earlier for the pressure.   
 
 
 ### Evaporation
