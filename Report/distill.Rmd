@@ -317,7 +317,9 @@ min(Temp['temperature'])
 
 May 2012 was picked to visualise the distribution of the Temperature over the country. This month has been selected randomly. 
 Figure \@ref(fig:TempVis) is displayed a gif containing three different graphs. First the distribution of the Temperatures across the country in May 2012. Then, the same plot but this time the number of fires was added on top. And lastly, the same plot as prior but this time the burnt area is added on top. 
-We can see from the plot that the temperatures are higher reaching 28.15 degrees celsius near the border of Mexico. The coldest state is Montana with an average of 1.37 degrees celsius during the month of May. 
+
+We can see from the plot that the temperatures are higher reaching 28.15 degrees celsius near the border of Mexico. Whereas the coldest state is Montana with an average of 1.37 degrees celsius during the month of May. 
+
 Looking at the number of fires, we can see that as a preliminary visual analysis, the fires occur in the hottest regions. The same way, the largest burnt area cluster in the hottest areas. More rigorous analysis will follow back. 
 
 ```{r TempVis, fig.cap="Gif of Temperature repartition over the State and how it visually interacts with the fires and burnt area.", echo=FALSE, out.width="250%"}
@@ -331,12 +333,24 @@ include_graphics("Temperature.gif")
 include_graphics("Pressure.gif")
 
 ```
+
+The same way as in Figure \@ref(fig:TempVis), Figure \@ref(fig:TempVis) represents the pressure distribution and their different attributes. One first strong observation when comparing Figures \@ref(fig:TempVis) and \@ref(fig:TempVis) is that the distribution of both meteorological factor are extremely similar. Indeed, areas with lower temperatures coicide with lower pressure and same applied in the converse situation. This is explained by the Ideal gas law which states that: 
+$$P V = n R T $$
+Where P, V and T are the pressure, volume and temperature; n is the amount of substance; and R is the ideal gas constant. We can see that the pressure and temperature are perfectly correlated. 
+
+Conserning the number of fires and burnt areas, the same conclusion as for the temperature can be applied. 
+
 ### Wind
 ```{r WindVis, fig.cap="Gif of Wind repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
 
 include_graphics("Wind.gif")
 
 ```
+
+In Figure \@ref(fig:WindVis) are displayed the wind directions and their intensities
+
+
+
 ### Evaporation
 ```{r EvaVis, fig.cap="Gif of Evaporation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
 
