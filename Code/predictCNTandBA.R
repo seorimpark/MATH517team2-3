@@ -36,21 +36,15 @@ testing <- train [-random_sample,]
 
 #Step 3 : Build the model: 
 model <- zeroinfl(CNT~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
-                    lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
-                    clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+clim9+
-                    clim10+ altiMean+ altiSD, data = training)
+                    lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+ 
+                    altiMean+ altiSD, data = training)
 #Features selection : 
-#step (model, direction = "backward")
+step (model, direction = "backward")
 #Backward selection takes too much time to run 
 
 #Prediction the test variable to check if our model is good
 prediction <- predict(model, testing)
 prediction
-#Compute RMSE, MAE and R2 to know if the model is good 
-#The lower the rmse root mean square error,the better the model  IS ABLE TO FIT A DATASET 
-#mae mean absolute error : on average the forecast's distance from the true value is .. (MAE)
-#R2 
-
 data.frame(R2 = R2(prediction, testing$CNT,na.rm = TRUE),
            RMSE = rmse(prediction, testing$CNT, na.rm=TRUE),
            MAE = mae(prediction, testing$CNT,na.rm =TRUE))
@@ -72,20 +66,20 @@ prediction
 data.frame(R2 = R2(prediction, testing$CNT,na.rm = TRUE),
            RMSE = rmse(prediction, testing$CNT, na.rm=TRUE),
            MAE = mae(prediction, testing$CNT,na.rm =TRUE))
-
+#Not big difference 
 
 #Build a model for BA values : 
 training$BA = as.integer(training$BA)
-modelB <- zeroinfl(BA~lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+modelB <- zeroinfl(BA~CNT+lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
                      lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
-                     clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+
-                     clim9 +clim10+ altiMean+ altiSD, data = training)
+                     clim1+clim2+clim3+ clim5+ clim6+ clim7+clim8+clim9+
+                     clim10+ altiMean+ altiSD, data = training)
                    
-prediction <-predict(modelB,testing)
+prediction1 <-predict(modelB, testing)
 
-data.frame(R2= R2(prediction, testing$BA, na.rm = TRUE),
-           RMSE = rmse(prediction, testing$BA, na.rm = TRUE),
-           MAE = mae(prediction, testing$BA, na.rm = TRUE))
+data.frame(R2= R2(prediction1, testing$BA, na.rm = TRUE),
+           RMSE = rmse(prediction1, testing$BA, na.rm = TRUE),
+           MAE = mae(prediction1, testing$BA, na.rm = TRUE))
 #Final goal : compute the missing the 
 goalBA<- df[is.na(df$BA),]
 goalCNT <- df[is.na(df$CNT),]
