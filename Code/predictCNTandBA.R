@@ -82,7 +82,9 @@ data.frame(R2= R2(prediction1, testing$BA, na.rm = TRUE),
            MAE = mae(prediction1, testing$BA, na.rm = TRUE))
 #Final goal : compute the missing the 
 goalBA<- df[is.na(df$BA),]
-goalCNT <- df[is.na(df$CNT),]
+nrow(df)
+goalCNT<- df[is.na(df$CNT),]
+nrow(goalCNT)
 goalCNT$CNT <- predict()
 goal
 
@@ -96,7 +98,7 @@ m1<-zeroinfl(CNT~lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
                lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
                clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+
                clim10+ altiMean+ altiSD, data = train)
-#m2 <-zeroinfl(BA~lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+m2 <-zeroinfl(BA~lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
                 lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
                 clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+
                 clim10+ altiMean+ altiSD, data = train)
