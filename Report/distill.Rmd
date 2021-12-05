@@ -292,6 +292,34 @@ include_graphics("3.png")
 ## Visualisation of Wildfires considering different meteorological factors and their relations
 
 ### Temperature
+```{r, include=FALSE}
+Temp<-df %>% filter(year==2012)%>% filter (month==5) 
+
+remove = c("area","year","month","altiMean","altiSD", "lc1", "lc2", "lc3", "lc4", "lc5", "lc6", "lc7", "lc8", "lc9", "lc10", "lc11", "lc12", "lc13", "lc14", "lc15", "lc16", "lc17", "lc18")
+
+
+# Temperatures in Celsius
+
+Temp=Temp[, -which(names(df)%in% remove)]
+Temp<-Temp%>% dplyr::rename(NSwind=clim1, WEwind=clim2, 
+                            dew_temperature=clim3, temperature=clim4, 
+                            potential_evaporation=clim5,solar_radiation=clim6, thermal_radiation=clim7, pressure=clim8, evaporation=clim9, 
+                            precipitation=clim10)
+Temp <- Temp %>% mutate(Wspeed=(sqrt(NSwind^2+WEwind^2))) %>% select(-NSwind, -WEwind)
+Temp$dew_temperature = Temp$dew_temperature - 273.15
+Temp$temperature = Temp$temperature - 273.15
+Temp
+
+Temp1<-Temp %>% filter(lat==26.75 )%>% filter(lon ==-99.25 )
+Temp1['temperature']
+min(Temp['temperature'])
+```
+
+May 2012 was picked to visualise the distribution of the Temperature over the country. This month has been selected randomly. 
+Figure \@ref(fig:TempVis) is displayed a gif containing three different graphs. First the distribution of the Temperatures across the country in May 2012. Then, the same plot but this time the number of fires was added on top. And lastly, the same plot as prior but this time the burnt area is added on top. 
+We can see from the plot that the temperatures are higher reaching 28.15 degrees celsius near the border of Mexico. The coldest state is Montana with an average of 1.37 degrees celsius during the month of May. 
+Looking at the number of fires, we can see that as a preliminary visual analysis, the fires occur in the hottest regions. The same way, the largest burnt area cluster in the hottest areas. More rigorous analysis will follow back. 
+
 ```{r TempVis, fig.cap="Gif of Temperature repartition over the State and how it visually interacts with the fires and burnt area.", echo=FALSE, out.width="250%"}
 
 include_graphics("Temperature.gif")
@@ -316,6 +344,7 @@ include_graphics("Evaporation.gif")
 
 ```
 
+To access the intarctive part, click [this link](https://seorimpark.shinyapps.io/InterationWildfire/). In this app you will able to select the year, month, the distribution of the meteorological factors (Wind direction, Dew, Temperatures, Temperatures, Potential Evaporation, Evaporation, Solar Radiation, Thermal, Radiation, Pressure and Precipitation) the feature to display on top of the distribution (None, CNT, BA) and **finally select if the feature to be selected are averaged by month or year** (Comment Zineb: not sure about this last part).
 
 ## Wildfires and the land cover
 ### Correlation between Land covers and Wildfires
