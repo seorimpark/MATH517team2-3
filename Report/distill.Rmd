@@ -1239,6 +1239,8 @@ A web application is available [here](https://fahimbeck.shinyapps.io/windfire_co
 
 ## Subgroup analysis
 
+### Quantile regression
+
 ```{r include=FALSE}
 load("../Data/data_train_DF.RData")
 data = data_train_DF
@@ -1318,18 +1320,18 @@ plot(unique(data$year),mean.temp, 'l', xlab='Year',ylab='Yearly mean temperature
 ```
 
 
-## Survival analysis on the incidence of wildfires
+### Survival analysis on the incidence of wildfires
 
 
-Having considered the subgroup of gridpoints that are highly susceptible to wildfires, we next  use survival analysis to study how temperature affects the incidence of wildfires. We will use Cox additive hazards regression to characterize how temperature affects the survival probability with respect to wildfire events. The survival probability is defined as the probability of not experiencing any wildfire event by month $t$ during a given year. To fix ideas, we first consider the survival during year 2015. The Kaplan-Meier estimator of the survival probability is given by
+Having considered the subgroup of gridpoints that are highly susceptible to wildfires, a next step was to  use survival analysis to study how temperature affects the incidence of wildfires.  Cox additive hazards regression was used to characterize how temperature affects the survival probability with respect to wildfire events. The survival probability is defined as the probability of not experiencing any wildfire event by month $t$ during a given year. To fix ideas, we first considered the survival during year 2015. The Kaplan-Meier estimator of the survival probability is given by
 
 $$ \widehat{P}(T>t) = \prod_{T_i\leq t} \left( 1- \frac{\Delta N_{T_i}}{Z(T_i)} \right)~,$$
 
-where $T_i$ is the time of the first wildfire in the geographical gridpoint $i$ during the year 2015 and $Z(T_i)$ is the number of gridpoints at risk of experience a first wildfire event just before time $T_i$.  We have plotted the Kaplan-Meier estimator for the year 2015 in Fig. \@ref(fig:survival) below. As can be seen in the plot, the first wildfire often occurs during March.
+where $T_i$ is the time of the first wildfire in the geographical gridpoint $i$ during the year 2015 and $Z(t)=\sum_{i=1}^n I(T_i\geq t)$ is the number of gridpoints at risk of experiencing a first wildfire event just before time $t$.  The Kaplan-Meier estimator for the year 2015 has been plotted in Fig. \@ref(fig:survival) below together with $95\%$ confidence intervals, shown by the dotted lines. As can be seen in the plot, the first wildfire often occurs during March.
 
 
 
-```{r survival, fig.cap="Kaplan-Meier estimator of the survival with respect to wildfire events during 2015",  echo=FALSE}
+```{r survival, fig.cap="Kaplan-Meier estimator of the survival with respect to wildfire events during 2015.  Confidence intervals ($95\%$) are shown by dotted lines.",  echo=FALSE}
 df.surv<- data.frame('ID'= paste(data$lon,data$lat) , 'start'=rep(0,nrow(data)) , 'stop'=data$month,  'count' =data$CNT, 'event'= as.numeric(data$CNT>=1)  , 'year'= data$year, 'Temp'=data$clim4-273 )
 # Remove rows with missing values:
 df.surv<- df.surv[
@@ -1384,21 +1386,21 @@ coxfit<-coxph( Surv(start,stop, event)  ~ Temp, df.truncated.sample)
 ```
 
 
-Next, we fit a Cox proportional hazards regression model of the type
+Next, our analysis employed a Cox proportional hazards regression model of the type
 
-$$ \alpha(t\mid T_K; \beta) = \alpha_0(t)\exp\left(\beta \cdot T_C\right)$$
+$$ \alpha(t\mid T_C; \beta) = \alpha_0(t)\exp\left(\beta \cdot T_C\right)$$
 where $\alpha_0(t)$ is a baseline hazard, $T_C$ is the temperature (in degrees Celsius) and $\beta$ is regression coefficent for  $T_C$, which is to be estimated. Thus, the hazard ratio for an increase by 1 degree Celsius is given by
 $$HR=\frac{\alpha(t\mid \theta; \beta)}{\alpha(t\mid \theta-1; \beta)}=\exp(\beta) ~.$$
-For the year 2015, our Cox proportional hazards regression give the following results:
+For the year 2015, the Cox proportional hazards regression give the following results:
 
 ```{r echo=FALSE}
 summary(coxfit)
 ```
 
-Thus, temperature has a statistically significant effect on the hazard ratio for wildfire events. We have also repeated the analysis for other years and illustrated the resulting hazard ratio estimates with $95\%$ confidence intervals  in Fig. \@ref(fig:HR) below.
+Thus, temperature has a statistically significant effect on the hazard ratio for wildfire events.The analysis was also repeated for other years: the resulting hazard ratio estimates have been illustrated with $95\%$ confidence intervals  in Fig. \@ref(fig:HR) below.
 
 
-```{r HR, fig.cap="Evolution of hazard ratios over time", echo=FALSE}
+```{r HR, fig.cap="Evolution of hazard ratios over time. Confidence intervals ($95\%$) are shown by dotted lines.", echo=FALSE}
 j<-0
 HR<-data.frame('HR'=0,'lower.95'=0,'upper95'=0,'year'=0) # Dataframe containing hazard ratios and confidence intervals for different years
 
