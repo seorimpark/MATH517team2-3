@@ -1,6 +1,8 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 ````{r, include=FALSE}
 
@@ -24,46 +26,20 @@ library(reshape2)
 library(stargazer)
 library(knitr)
 library(stargazer)
+library(caret)
+library(Metrics)
+library(hydroGOF)
 ````
+
+
 ### Land covers and meteorogical correlation
+
+
 ```{r, include = FALSE}
 load ("../Data/data_train_DF.RData")
 df <- data_train_DF
-#Remove the NA values from the data
-df<-df[!is.na(df$CNT),] 
-df<-df[!is.na(df$BA),]
 ```
 
-
-We want to understand the correlation between land covers and meteorological variables. To do so, we are going to clean our data first, rename the variables by their description so that we can easily analyze our results and then compute the correlation between the variables. The problem is that when trying to output the matrix, we get a warning saying that the matrix is too big. To get an glimpse of what variable can be highly related, we are going to output the correlation between a pair of land cover and meteorological variable when it is bigger than a threshold manually set.
-
-
-```{r, echo = FALSE}
-remove = c("CNT","BA","lon","lat","area","year","month","altiMean","altiSD")
-data =df[, -which(names(df)%in% remove)]
-data<-data%>% dplyr::rename(CR=lc1,CRherb = lc2, MosaicC = lc3, MosaicVege = lc4,
-                            TBE=lc5,TBD = lc6, TNE  = lc7, TND = lc8, TreeMixed =lc9,
-                            MosaicTreeShrub= lc10, Shrub= lc11, Grass = lc12,
-                            Svege=lc13,
-                            TreeFlood=lc14,ShrubFlood = lc15, urban = lc16, 
-                            BareAreas =lc17, Water = lc18,NSwind=clim1, WEwind=clim2, 
-                            dew_temperature=clim3, temperature=clim4, 
-                            potential_evaporation=clim5, solar_radiation= clim6,
-                            thermal_radiation=clim7, pressure=clim8, evaporation=clim9, 
-                            precipitation=clim10)
-df
-```
-
-
-```{r,tab.cap="Table of Zero Poisson regression results", echo = FALSE}
-m1<-zeroinfl(CNT~lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18
-             , data = df)
-summary(m1)
-```
-
-
-
-Below, you can find a block of output containing Poisson regression coefficients for each of the variables along with the standard errors, z-score and p-values for the coefficients. A second block follows with the inflation model which includes logit coefficients for predicting excess zeros. All of the predictions in both the count and inflation portion are statistically significant ( all p-values are very small) except for the land cover 3 in the count model. But otherwise this means that the null hypothesis that the coefficient is equal to 0 is rejected for all the coefficients. Hence this model fits the data significantly better than the null model.
 
 ## Prediction of the number of fire depending of the land covers : 
  
@@ -107,10 +83,7 @@ To measure the good fitting of our model, we compute the R squared, the mean squ
 
 To improve the model, we tried to use feature selection has been in r ( backward selection). It takes about 20 minutes to run, the code is available in the file ('predictCNTandBA.R'). It only delete clim4 as feature for the model. We are going to let the model as previously. And now, we predict the missing values in our dataframe and replace the NA values by the prediction.
 
-```{r, echo = FALSE}
-mnull <- update(m1, .~1)
-pchisq (2* (logLik(m1)-logLik(mnull)), df =18, lower.tail = FALSE)
-```
+
 
 
 
@@ -120,9 +93,24 @@ plot(prediction,testing$CNT, xlab = "Predicted Values", ylab = "Observed Values"
 
 
 
+
 ```{r, echo = FALSE}
-effect_plot(new_test$CNT, pred = test$CNT, interval = TRUE)
+goal = df[is.na(df$CNT),]
+goal$CNT = predict (model, goal)
+data<-replace(df$CNT, is.na(df$CNT)== TRUE, goal$CNT)
 ```
+
 
 ### Prediction of BA : 
 
+
+```{r, echo = FALSE}
+sp = sample (nrow(training), 10000)
+train = training[sp,]
+train$BA = as.integer(train$BA)
+select <- zeroinfl(BA~ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+                   lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
+                   clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+ clim9 +
+                   clim10+ altiMean+ altiSD, data = train)
+step(select, direction = "backward")
+```
