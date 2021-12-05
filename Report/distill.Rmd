@@ -396,7 +396,7 @@ Figure \@ref(fig:PotEvapVis) displays the potential evaporation (the amount of e
 ### Solar and thermal radiation
 ```{r SolVis, fig.cap="Gif of solar radiation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
 
-include_graphics("Solar.gif")
+include_graphics("Sol.gif")
 ```
 
 ```{r ThermVis, fig.cap="Gif of thermal radiation repartition over the State and how it visually interacts with the fires and burnt area", echo=FALSE, out.width="250%"}
@@ -1098,6 +1098,43 @@ data<-replace(df$CNT, is.na(df$CNT)== TRUE, goal$CNT)
 ```
 
 
+### Prediction of the aggregated burnt areas 
+
+After trying different model, we obtain a good result when using the Generalized linear model with gaussian family :
+
+```{r, echo = FALSE}
+model2 <-glm (BA~ CNT+ lc1+lc2+lc3+lc4+lc5+lc6+lc7+lc8+lc9+lc10+
+                   lc11+lc12+lc13+lc14+lc15+lc16+lc17+lc18+
+                   clim1+clim2+clim3+clim4+ clim5+ clim6+ clim7+clim8+ clim9 +
+                   clim10+ altiMean+ altiSD, data = training, family = 'gaussian')
+prediction2 <-predict (model2, testing)
+data.frame(R2 = R2(prediction2, testing$CNT,na.rm = TRUE),
+           RMSE = rmse(prediction2, testing$BA),
+           MAE = mae(prediction2, testing$BA))
+```
+
+
+
+As you can, the model explains 40% of the variable. But, the value of RMSE and MAE are still big. For large data, this can occur. Let's plot the distribution of the prediction compared to the true values for the test.
+
+
+
+```{r, echo = FALSE}
+plot(prediction2,testing$BA, xlab = "Predicted Values", ylab = "Observed Values")
+```
+
+
+Now we replace the NA values in the dataframe by the predicted one. 
+
+
+```{r, echo = FALSE}
+goal = df[is.na(df$BA),]
+goal$BA = predict (model2, goal)
+data<-replace(df$CNT, is.na(df$CNT)== TRUE, goal$CNT)
+```
+
+
+
 ## Wildfires and meteorogical factors
 
 In this section, we try to find some meteorological factors that could potentially trigger a wildfire. To do so, we will plot a Pearson correlation heatmap. The first step is to get a subset from our initial dataset that is more representative of wildfire conditions. As a fire is quite a rare event, we will not be able to find any links if we were considering the entire population (the correlations would be around 0). 
@@ -1545,7 +1582,7 @@ Most years, the confidence intervals do not include the null value of the hazard
 
 ## Conclusion
 
-In this investigation, we have studied three sets of risk factors for wildfires: (1) the time period (2) the type of land cover and (3) local meteorological conditions. Before delving into the detailed analyses that would allow us to answer these questions, we conducted a preliminary and entirely visual investigation to see the interaction between the number of fires and the area burned with the different climatic and spatial variables. With the results obtained, we gained a first idea and expectations for more accurate findings that will follow. The interactive map as a function of time let us analyse the influence of the time period within a year and throughout the years. Although the map looked very heterogeneous, some particular trends have been observed for a specific time period in a year. Also, the global trend for burnt area was periodic, and slightly increasing throughout the years whereas the number of wildfires did not. In our exploration of land cover, we found that the proportion of urban areas has been increasing from 1993-2005. Fires are often caused by urban activity, so this trend could lead to more wildfires in the future. In our meteorological exploration, we found that the cause-effect relation of meteorological variables on wildfires may be highly multifactorial. The correlations between the number of fires and meterological varibles were small marginally in the population. To disentangle the effect of meterological variables from the effect of land cover on fires, we examined the joint distribution of these variables. We found that the correlation between meteorological variables and land cover types were weaker than expected, which makes it more feasible to interpret these variables as independent causes of wildfires. In addition, we tried to model the effect of wind on the spread of wildfires. The results as well as the literature indeed show that wind plays a major role in the dynamics of wildfires, especially by supplying them with oxygen. The direction as well as the intensity of the fires vary according to the parameters of the current wind. 
+In this investigation, we have studied three sets of risk factors for wildfires: (1) the time period (2) the type of land cover and (3) local meteorological conditions. Before delving into the detailed analyses that would allow us to answer these questions, we conducted a preliminary and entirely visual investigation to see the interaction between the number of fires and the area burned with the different climatic and spatial variables. With the results obtained, we gained a first idea and expectations for more accurate findings that will follow. The interactive map as a function of time let us analyse the influence of the time period within a year and throughout the years. Although the map looked very heterogeneous, some particular trends have been observed for a specific time period in a year. Also, the global trend for burnt area was periodic, and slightly increasing throughout the years whereas the number of wildfires did not. In our exploration of land cover, we found that the proportion of urban areas has been increasing from 1993-2005. Fires are often caused by urban activity, so this trend could lead to more wildfires in the future. In our meteorological exploration, we found that the cause-effect relation of meteorological variables on wildfires may be highly multifactorial. The correlations between the number of fires and meterological varibles were small marginally in the population. To disentangle the effect of meterological variables from the effect of land cover on fires, we examined the joint distribution of these variables. We found that the correlation between meteorological variables and land cover types were weaker than expected, which makes it more feasible to interpret these variables as independent causes of wildfires. We build a model using both land covers and meteorological variables to describe the number of fires and the aggregate burnt areas. Thanks to these models, we predicted the missing values in our dataframe. In addition, we tried to model the effect of wind on the spread of wildfires. The results as well as the literature indeed show that wind plays a major role in the dynamics of wildfires, especially by supplying them with oxygen. The direction as well as the intensity of the fires vary according to the parameters of the current wind. 
 
 Most of our analysis has targeted marginal associations between risk factors and the number of wildfires or aggregate burnt area (i.e. unconditional on subsets of geographical gridpoints). These correlations were often weak, but grew stronger in subsets of the population with a greater number of wildfires. This motivated us to characterize the heterogeneity in risk of wildfires by conducting subgroup analyses. To do so, we performed quantile regression, which revealed that temperature substantially exacerbated the risk of wildfires in areas which are prone to wildfires. This is in spite of the fact that temperature was only weakly associated with  the number of wildfire events  marginally. We also performed survival analysis for the time to the first wildfire event of the year using Cox additive hazards regression, which revealed a significant association betwen temperature and the hazard of the first wildfire event.
 
