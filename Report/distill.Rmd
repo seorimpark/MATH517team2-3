@@ -51,7 +51,7 @@ An investigation will be conducted and consists in answering these subquestions:
 
 ### Approaches
 To answer the above questions we will proceed as follows. 
-A descriptive and visual approach where interactive plots will be produced  with information on different dimensions: geographically, temporally and by different factors. 
+A descriptive and visual approach where interactive plots will be produced  with information on different dimensions: geographically, temporally and by different factors. A descriptive analysis to study the evolution of wildfire cases, and its relation with the meteorological factors will be made.
 Afterwards, the distribution of land covers will be studied. Also, the analysis of the variation of land covers in the same location will be carried because of the changes that have been noticed in some areas. 
 We will then proceed with the analysis of the number of fires. To do so, the analysis of the land covers and meteorological parameters will be conducted. A part is devoted to the modelling of the effect of wind on the spread of wildfires.
 After noticing that the correlation between parameters was low, we used subsets and performed a quantile regression. 
