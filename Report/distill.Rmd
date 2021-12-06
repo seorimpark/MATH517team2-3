@@ -345,7 +345,7 @@ include_graphics("Pressure.gif")
 
 The same way as in Figure \@ref(fig:TempVis), Figure \@ref(fig:PresVis) represents the pressure distribution and how it interacts with different attributes. One first strong observation when comparing Figures \@ref(fig:TempVis) and \@ref(fig:PresVis) is that the distribution of both meteorological factors is extremely similar. Indeed, areas with lower temperatures coicide with lower pressure and same applied in the converse situation. This is follows from the Ideal Gas Law which states that: 
 $$P V = n R T $$
-Where P, V and T are the pressure, volume and temperature; n is the amount of substance; and R is the ideal gas constant. Using this, we can see why the pressure and temperature are perfectly correlated. 
+Where P, V and T are the pressure, volume and temperature; n is the amount of substance; and R is the ideal gas constant. Using this, we can see why the pressure and temperature seem perfectly correlated visually. 
 
 Concerning the number of fires and burnt areas, the same conclusion as for the temperature can be applied. 
 
