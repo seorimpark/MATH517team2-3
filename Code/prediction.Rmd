@@ -136,3 +136,10 @@ data.frame(R2 = R2(prediction2, testing$CNT,na.rm = TRUE),
 ```
 
 Best model that we got. 
+```{r, echo = FALSE}
+goal = df[is.na(df$BA),]
+goal$BA = predict (model2, goal)
+data<-replace(df$CNT, is.na(df$CNT)== TRUE, goal$CNT)
+df
+is.na(df$CNT) == TRUE
+```
