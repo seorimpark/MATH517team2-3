@@ -1465,7 +1465,7 @@ Having considered the subgroup of gridpoints that are highly susceptible to wild
 
 $$ \widehat{P}(T>t) = \prod_{T_i\leq t} \left( 1- \frac{\Delta N_{T_i}}{Z(T_i)} \right)~,$$
 
-where $T_i$ is the time of the first wildfire in the geographical gridpoint $i$ during the year 2015 and $Z(t)=\sum_{i=1}^n I(T_i\geq t)$ is the number of gridpoints at risk of experiencing a first wildfire event just before time $t$.  The Kaplan-Meier estimator for the year 2015 has been plotted in Fig. \@ref(fig:survival) below together with $95\%$ confidence intervals, shown by the dotted lines. As can be seen in the plot, the first wildfire often occurs during March.
+where $T_i$ is the time of the first wildfire in the geographical gridpoint $i$ during the year 2015 and $Z(t)=\sum_{i=1}^n I(T_i\geq t)$ is the number of gridpoints at risk of experiencing a first wildfire event just before time $t$.  The Kaplan-Meier estimator for the year 2015 has been plotted in Figure \@ref(fig:survival) below together with $95\%$ confidence intervals, shown by the dotted lines. As can be seen in the plot, the first wildfire often occurs during March.
 
 
 
@@ -1535,7 +1535,7 @@ For the year 2015, the Cox proportional hazards regression give the following re
 summary(coxfit)
 ```
 
-Thus, temperature has a statistically significant effect on the hazard ratio for wildfire events.The analysis was also repeated for other years: the resulting hazard ratio estimates have been illustrated with $95\%$ confidence intervals  in Fig. \@ref(fig:HR) below.
+Thus, temperature has a statistically significant effect on the hazard ratio for wildfire events.The analysis was also repeated for other years: the resulting hazard ratio estimates have been illustrated with $95\%$ confidence intervals  in Figure \@ref(fig:HR) below.
 
 
 ```{r HR, fig.cap="Evolution of hazard ratios over time. Confidence intervals ($95\\%$) are shown by dotted lines.", echo=FALSE}
