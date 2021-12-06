@@ -10,6 +10,16 @@ Brainstorming: https://docs.google.com/document/d/1t1TRSdXrubLFedwC9bPvZH0JIvguA
 
 ### Possible questions
 
+The purpose of this investigation is to give an answer to the following question:
+
+What are the main factors that affect the propagation of wildfires within the United States?
+
+An investigation will be conducted and consists in answering these subquestions:
+- How have the number of fires in the United States of America evolved with time from 1993 to 2015?
+- How do the land covers vary over time?
+- How are fires distributed across the land covers and meteorological factors?
+
+
 ## List of members
 - Zineb Agnaou (ZinebAg)
 - Fahim Beck (FahimBeck)
