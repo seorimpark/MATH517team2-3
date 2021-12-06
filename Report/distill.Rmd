@@ -1538,7 +1538,7 @@ summary(coxfit)
 Thus, temperature has a statistically significant effect on the hazard ratio for wildfire events.The analysis was also repeated for other years: the resulting hazard ratio estimates have been illustrated with $95\%$ confidence intervals  in Figure \@ref(fig:HR) below.
 
 
-```{r HR, fig.cap="Evolution of hazard ratios over time. Confidence intervals ($95\\%$) are shown by dotted lines.", echo=FALSE}
+```{r HR, fig.cap="Evolution of hazard ratios over time. Confidence intervals ($95\\%$) are shown by dotted lines. The red line represents the null value of the hazard ratio.", echo=FALSE}
 j<-0
 HR<-data.frame('HR'=0,'lower.95'=0,'upper95'=0,'year'=0) # Dataframe containing hazard ratios and confidence intervals for different years
 
