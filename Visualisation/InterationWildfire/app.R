@@ -19,11 +19,12 @@ library(maps)
 library(shinyWidgets)
 library(ggquiver)
 
-load("data_train_DF.RData")
+#load("data_train_DF.RData")
+my_model1<-load("../../Code/my_model1.rda")
 #load("~/Desktop/Github/SCV/SCV_project/MATH517team2-3/VisualisationProj3/data_train_DF.RData")
 data_state <- read.csv("BA_CNT_per_state.csv")
-data_withNA = data_train_DF
-
+#data_withNA = data_train_DF
+data_withNA = my_model1
 #removing NA
 data<-data_withNA #%>% drop_na() 
 
