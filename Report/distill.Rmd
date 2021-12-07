@@ -54,7 +54,7 @@ To answer the above questions we will proceed as follows.
 A descriptive and visual approach where interactive plots will be produced  with information on different dimensions: geographically, temporally and by different factors. A descriptive analysis to study the evolution of wildfire cases, and its relation with the meteorological factors will be made.
 Afterwards, the distribution of land covers will be studied. Also, the analysis of the variation of land covers in the same location will be carried because of the changes that have been noticed in some areas. 
 We will then proceed with the analysis of the number of fires. To do so, the analysis of the land covers and meteorological parameters will be conducted. After this analysis, we will use both characteristics to build a model which will predict number of fires in a grid and another one for predicting aggregate burnt areas in a grid. A part is devoted to the modeling of the effect of wind on the spread of wildfires.
-After noticing that the correlation between parameters was low, we used subsets and performed a quantile regression. 
+After noticing that the correlation between parameters was low, we used subsets and performed quantile regression and survival analysis. 
 
 ## Sources of information / datasets
 To perform this analysis, a dataset for the United States from 1993 to 2015 will be used. It contains 563,983 rows with 37 columns. The columns are the following:
@@ -1535,7 +1535,7 @@ For the year 2015, the Cox proportional hazards regression give the following re
 summary(coxfit)
 ```
 
-Thus, temperature has a statistically significant effect on the hazard ratio for wildfire events.The analysis was also repeated for other years: the resulting hazard ratio estimates have been illustrated with $95\%$ confidence intervals  in Figure \@ref(fig:HR) below.
+Thus, temperature has a statistically significant effect on the hazard ratio for wildfire events. The analysis was also repeated for other years: the resulting hazard ratio estimates have been illustrated with $95\%$ confidence intervals  in Figure \@ref(fig:HR) below.
 
 
 ```{r HR, fig.cap="Evolution of hazard ratios over time. Confidence intervals ($95\\%$) are shown by dotted lines. The red line represents the null value of the hazard ratio.", echo=FALSE}
