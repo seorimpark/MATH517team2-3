@@ -343,7 +343,7 @@ include_graphics("Pressure.gif")
 
 ```
 
-The same way as in Figure \@ref(fig:TempVis), Figure \@ref(fig:PresVis) represents the pressure distribution and how it interacts with different attributes. One first strong observation when comparing Figures \@ref(fig:TempVis) and \@ref(fig:PresVis) is that the distribution of both meteorological factors is extremely similar. Indeed, areas with lower temperatures coicide with lower pressure and same applied in the converse situation. This is follows from the Ideal Gas Law which states that: 
+The same way as in Figure \@ref(fig:TempVis), Figure \@ref(fig:PresVis) represents the pressure distribution and how it interacts with different attributes. One first strong observation when comparing Figures \@ref(fig:TempVis) and \@ref(fig:PresVis) is that the distribution of both meteorological factors is extremely similar. Indeed, areas with lower temperatures coicide with lower pressure and same applied in the converse situation. This follows the ideal gas law which states that: 
 $$P V = n R T $$
 Where P, V and T are the pressure, volume and temperature; n is the amount of substance; and R is the ideal gas constant. Using this, we can see why the pressure and temperature seem perfectly correlated visually. 
 
@@ -478,7 +478,7 @@ ggplot(plotDat,aes(X1,X2, fill = c( "lightblue","red")[ value + 1 ])) +
 ### Land cover over time and location
 
 
-This section will address the distribution of land covers over time. To do so, the geographical coordinates of Malibu, California has been selected. This area has been heavily impacted by wildfires in recent years. "In November 2018, the wealthy coastal enclave of Malibu was engulfed by the Woolsey Fire, which spread to over 96,000 acres of land outside of LA and is now 35% contained. At least two people were pronounced dead in Malibu on Friday" (@Malibu). 
+This section will address the distribution of land covers over time. To do so, the geographical coordinates of Malibu, California has been selected. This area has been heavily impacted by wildfires in recent years. "In November 2018, the wealthy coastal enclave of Malibu was engulfed by the Woolsey Fire, which spread to over 96,000 acres of land outside of LA and is now 35% contained. At least two people were pronounced dead in Malibu on Friday" [@Malibu]. 
 In Figure \@ref(fig:loc), we can see the exact location of the studied point on the map of the United States.
 
 
@@ -796,7 +796,7 @@ p
 ```
 In Figure (\@ref(fig:fire2000)), the highest occurency for fires happen in Florida and Georgia in the South East, in New Jersey in the East coast and all along the West coast. These areas are characterised by the predominance of $bradleaved evergreen closed to open$ trees. 
 This observation can be explained by the effect of climbing fire -- the easy inflammable land covers e.g. $grassland and shrubs$ act as a ladder to higher land cover with higher fuel capacity as trees. 
-Usually, "the forests are more prone to the fire only when there is a particularly low near-surface SM (soil moisture), most likely from moderate to extensive drought" (@schaefer2019land).
+Usually, "the forests are more prone to the fire only when there is a particularly low near-surface SM (soil moisture), most likely from moderate to extensive drought" [@schaefer2019land].
 
 
 Also, it can be observed that the closeness of urban land cover is correlated with occurrence of wildfires (For instance near New York city and Los Angeles), meaning that the human activity can be the trigger of wildfires. Other commonly known trigger of wildfires is the presence of dry thunderstorms with high activity of cloud-to-ground flashes. This mentioned trigger is usually the cause of the higher frequency of big wildfires in the Pacific Coast.
@@ -805,7 +805,7 @@ Also, it can be observed that the closeness of urban land cover is correlated wi
 The combination of $grassland$ with $needle-leaved trees$ might be dangerous as can be visible on the Figure (\@ref(fig:predom)) and Figure (\@ref(fig:fire2000)).
 
 
-The presence of $needle-leaved trees$ for wildfires is crucial, since the trees are closer to each-other and the dead branches on the floor with sap provide enough fuel to higher spread of wildfire. Moreover, the land cover of $deciduous trees$ can be especially dangerous in the early spring. The article by Barros et al. (@barros2014wildfire) studying the fire selectivity in Portugal suggests that the selectivity for wildfire counts is higher for $shrublands, grasslands and conifers$, but lower for agricultural areas such as $cropland$. This suggestion seems to be confirmed in the US by the early observations of the Figures (\@ref(fig:predom)) and (\@ref(fig:fire2000)).
+The presence of $needle-leaved trees$ for wildfires is crucial, since the trees are closer to each-other and the dead branches on the floor with sap provide enough fuel to higher spread of wildfire. Moreover, the land cover of $deciduous trees$ can be especially dangerous in the early spring. The article by Barros et al. [@barros2014wildfire] studying the fire selectivity in Portugal suggests that the selectivity for wildfire counts is higher for $shrublands, grasslands and conifers$, but lower for agricultural areas such as $cropland$. This suggestion seems to be confirmed in the US by the early observations of the Figures (\@ref(fig:predom)) and (\@ref(fig:fire2000)).
 
 ```{r shift,fig.cap="Number of shifts of predominant land cover by location", echo=FALSE}
 
